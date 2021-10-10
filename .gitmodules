@@ -1,0 +1,3 @@
+[submodule "cas-zephyr-drivers"]
+	path = cas-zephyr-drivers
+	url = git@github.com:/calstar/cas-zephyr-drivers
