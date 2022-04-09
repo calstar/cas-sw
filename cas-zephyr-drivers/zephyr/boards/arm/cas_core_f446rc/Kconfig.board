@@ -1,0 +1,3 @@
+config BOARD_CAS_CORE_F446RC
+	bool "STAR CAS Core F446CE edition"
+	depends on SOC_STM32F446XX

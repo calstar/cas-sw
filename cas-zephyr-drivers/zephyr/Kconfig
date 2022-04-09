@@ -1,0 +1,8 @@
+# Copyright (c) 2021 Aled Cuda <aled@berkeley.edu>
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "CAS"
+
+rsource "drivers/Kconfig"
+
+endmenu

@@ -1,0 +1,17 @@
+identifier: cas_core_f446rc
+name: CAS Core F446RC
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - counter
+  - gpio
+  - spi
+  - i2c
+  - backup_sram
+ram: 128
+flash: 256
+

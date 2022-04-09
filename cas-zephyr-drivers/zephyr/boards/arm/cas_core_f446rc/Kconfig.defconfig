@@ -1,0 +1,11 @@
+if BOARD_CAS_CORE_F446RC
+
+config BOARD
+	default "cas_core_f446rc"
+
+config SPI_STM32_INTERRUPT
+	default y
+	depends on SPI
+
+endif # BOARD_CAS_CORE_F446CE
+
