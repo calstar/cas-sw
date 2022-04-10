@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20.0)
 list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 list(APPEND SOC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
-list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/BNO055_driver
+list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/BNO055_driver)
 
 # list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/blah)
 
