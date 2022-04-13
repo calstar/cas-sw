@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+ // Documentation: https://docs.zephyrproject.org/3.0.0/reference/devicetree/bindings/sensor/bosch%2Cbmp388-i2c.html#dtbinding-bosch-bmp388-i2c
+
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
@@ -13,6 +15,8 @@
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
+#define I2C_DEVICE_ADDRESS     b1110111
+#define DATA_READ_LENGTH 				10
 
 /* The devicetree node identifier for the &i2c alias. */
 #define I2C0_NODE DT_ALIAS(cas-i2c0)
@@ -39,10 +43,9 @@ void main(void)
 	}
 
 	void* pressuer_data;
-	// FIXME: Find device address on i2c bus for the BMP388 Node
-	// Documentation: https://docs.zephyrproject.org/3.0.0/reference/devicetree/bindings/sensor/bosch%2Cbmp388-i2c.html#dtbinding-bosch-bmp388-i2c
 	while (1) {
-		bmp388_io_ops.read(i2c_dev, pressuer_data, ,10);
+		bmp388_io_ops.read(i2c_dev, pressuer_data, I2C_DEVICE_ADDRESS, READ_DATA_LENGTH);
 		printk(pressuer_data);
+		k_msleep(SLEEP_TIME_MS);
 	}
 }
