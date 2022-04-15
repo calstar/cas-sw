@@ -11,7 +11,7 @@
 #include <devicetree.h>
 #include <drivers/gpio.h>
 #include <sys/printk.h>
-#include <drivers/bmp388.h>
+#include <drivers/sensor.h>
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
@@ -19,33 +19,45 @@
 #define DATA_READ_LENGTH 				10
 
 /* The devicetree node identifier for the &i2c alias. */
-#define I2C0_NODE DT_ALIAS(cas-i2c0)
+#define I2C1_NODE DT_NODELABEL(i2c1)
 
-#if DT_NODE_HAS_STATUS(I2C0_NODE, okay)
-#define I2C0	DT_GPIO_LABEL(I2C0_NODE, gpios)
-#define PIN	DT_GPIO_PIN(I2C0_NODE, gpios)
-#define FLAGS	DT_GPIO_FLAGS(I2C0_NODE, gpios)
-#else
+// #if DT_NODE_HAS_STATUS(I2C0_NODE, okay)
+// #define I2C0	DT_GPIO_LABEL(I2C0_NODE, gpios)
+// #define PIN	DT_GPIO_PIN(I2C0_NODE, gpios)
+// #define FLAGS	DT_GPIO_FLAGS(I2C0_NODE, gpios)
+// #else
+//
+// /* A build error here means your board isn't set up to communitcate in I2C */
+// #error "Unsupported board: cas-i2c0 devicetree alias is not defined"
+// #define I2C0	""
+// #define PIN	0
+// #define FLAGS	0
+// #endif
 
-/* A build error here means your board isn't set up to communitcate in I2C */
-#error "Unsupported board: cas-i2c0 devicetree alias is not defined"
-#define I2C0	""
-#define PIN	0
-#define FLAGS	0
-#endif
+void main(void) {
+	const struct device *i2c_dev = device_get_binding(DT_LABEL(I2C1_NODE));
+	struct sensor_value val;
+	uint32_t pressure = 0U;
 
-void main(void)
-{
-	const struct device *i2c_dev = DEVICE_DT_GET(I2C0);
+
+	printk("BMP388 sensor application\n");
 
 	if (i2c_dev == NULL) {
 		printk("Failed to get device binding");
 	}
 
-	void* pressuer_data;
 	while (1) {
-		bmp388_io_ops.read(i2c_dev, pressuer_data, I2C_DEVICE_ADDRESS, READ_DATA_LENGTH);
-		printk(pressuer_data);
+		if (sensor_channel_get(i2c_dev, SENSOR_CHAN_PRESS, &val) != 0) {
+			printk("sensor: channel get fail.\n");
+			return;
+		}
+
+		pressure = val.val1;
+		printk("sensor: pressure reading: %d\n", pressure);
+
+		// bmp388_io_ops.read(i2c_dev, pressuer_data, I2C_DEVICE_ADDRESS, READ_DATA_LENGTH);
+		// printk(pressuer_data);
 		k_msleep(SLEEP_TIME_MS);
 	}
+
 }
