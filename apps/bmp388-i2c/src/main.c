@@ -47,6 +47,11 @@ void main(void) {
 	}
 
 	while (1) {
+		if (sensor_sample_fetch(i2c_dev)) {
+			printk("sensor: sample fetch fail.\n");
+			return;
+		}
+
 		if (sensor_channel_get(i2c_dev, SENSOR_CHAN_PRESS, &val) != 0) {
 			printk("sensor: channel get fail.\n");
 			return;
