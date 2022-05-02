@@ -15,7 +15,7 @@
 #include <drivers/i2c.h>
 
 /* 1000 msec = 1 sec */
-#define SLEEP_TIME_MS   1000
+#define SLEEP_TIME_MS   500
 #define I2C_DEVICE_ADDRESS     b1110111
 #define DATA_READ_LENGTH 				10
 
@@ -45,17 +45,33 @@ void main(void) {
 
 	if (i2c_dev == NULL) {
 		printk("Failed to get device binding");
+		return;
+	} else {
+		printk("Got device binding\n");
+	
+	}
+
+	if (!device_is_ready(i2c_dev)) {
+		printk("Error: device is not ready");
 	}
 
 	while (1) {
-		if (sensor_sample_fetch(i2c_dev)) {
+		printk("Got in the loop\n");
+		printk("Sensor sample fetch: %d\n", sensor_sample_fetch_chan(i2c_dev, SENSOR_CHAN_PRESS));
+		if (sensor_sample_fetch_chan(i2c_dev, SENSOR_CHAN_PRESS) != 0) {
 			printk("sensor: sample fetch fail.\n");
 			return;
+		}
+		else {
+			printk("sensor: sample fetch succeeded\n");
 		}
 
 		if (sensor_channel_get(i2c_dev, SENSOR_CHAN_PRESS, &val) != 0) {
 			printk("sensor: channel get fail.\n");
 			return;
+		}
+		else {
+			printk("sensor: channel get succeeded\n");
 		}
 
 		pressure = val.val1;
