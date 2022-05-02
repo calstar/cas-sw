@@ -1,4 +1,4 @@
-&cas_onboard_i2c {
+&cas_i2c0 {
 	status = "okay";
 	bmp388@77 {
 		compatible = "bosch,bmp388";

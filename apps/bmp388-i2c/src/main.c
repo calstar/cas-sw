@@ -12,6 +12,7 @@
 #include <drivers/gpio.h>
 #include <sys/printk.h>
 #include <drivers/sensor.h>
+#include <drivers/i2c.h>
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
