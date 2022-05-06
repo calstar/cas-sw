@@ -16,4 +16,5 @@ config SPI
 config I2C
         default y
 
+
 source "Kconfig.zephyr"
