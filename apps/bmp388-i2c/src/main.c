@@ -47,8 +47,7 @@ void main(void) {
 		printk("Failed to get device binding");
 		return;
 	} else {
-		printk("Got device binding\n");
-	
+		printk("Got device binding\n");	
 	}
 
 	if (!device_is_ready(i2c_dev)) {
