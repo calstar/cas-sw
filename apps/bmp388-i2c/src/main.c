@@ -36,49 +36,48 @@
 // #endif
 
 void main(void) {
+
 	const struct device *i2c_dev = device_get_binding(DT_LABEL(I2C1_NODE));
 	struct sensor_value val;
 	uint32_t pressure = 0U;
 
-
-	printk("BMP388 sensor application\n");
+	printk("BMP388 sensor application.\n");
 
 	if (i2c_dev == NULL) {
-		printk("Failed to get device binding");
+		printk("Failed to get device binding.\n");
 		return;
 	} else {
 		printk("Got device binding\n");	
 	}
 
 	if (!device_is_ready(i2c_dev)) {
-		printk("Error: device is not ready");
+		printk("Device is not ready.\n");
+		return;
+	} else {
+		printk("Device is ready.\n")
 	}
 
 	while (1) {
-		printk("Got in the loop\n");
-		printk("Sensor sample fetch: %d\n", sensor_sample_fetch_chan(i2c_dev, SENSOR_CHAN_PRESS));
-		if (sensor_sample_fetch_chan(i2c_dev, SENSOR_CHAN_PRESS) != 0) {
-			printk("sensor: sample fetch fail.\n");
-			return;
-		}
-		else {
-			printk("sensor: sample fetch succeeded\n");
+
+		k_msleep(SLEEP_TIME_MS);
+
+		if (sensor_sample_fetch(i2c_dev) != 0) {
+			printk("Sensor sample fetch fail.\n");
+			continue;
+		} else {
+			printk("Sensor sample fetch succeeded.\n");
 		}
 
 		if (sensor_channel_get(i2c_dev, SENSOR_CHAN_PRESS, &val) != 0) {
-			printk("sensor: channel get fail.\n");
-			return;
-		}
-		else {
-			printk("sensor: channel get succeeded\n");
+			printk("Sensor channel get fail.\n");
+			continue;
+		} else {
+			printk("Sensor channel get succeeded.\n");
 		}
 
 		pressure = val.val1;
-		printk("sensor: pressure reading: %d\n", pressure);
+		printk("sensor: pressure reading: %d\n kilopascal.", pressure);
 
-		// bmp388_io_ops.read(i2c_dev, pressuer_data, I2C_DEVICE_ADDRESS, READ_DATA_LENGTH);
-		// printk(pressuer_data);
-		k_msleep(SLEEP_TIME_MS);
 	}
 
 }
