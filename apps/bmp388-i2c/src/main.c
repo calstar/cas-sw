@@ -14,32 +14,14 @@
 #include <drivers/sensor.h>
 #include <drivers/i2c.h>
 
-/* 1000 msec = 1 sec */
-#define SLEEP_TIME_MS   500
-#define I2C_DEVICE_ADDRESS     b1110111
-#define DATA_READ_LENGTH 				10
-
-/* The devicetree node identifier for the &i2c alias. */
-#define I2C1_NODE DT_NODELABEL(i2c1)
-
-// #if DT_NODE_HAS_STATUS(I2C0_NODE, okay)
-// #define I2C0	DT_GPIO_LABEL(I2C0_NODE, gpios)
-// #define PIN	DT_GPIO_PIN(I2C0_NODE, gpios)
-// #define FLAGS	DT_GPIO_FLAGS(I2C0_NODE, gpios)
-// #else
-//
-// /* A build error here means your board isn't set up to communitcate in I2C */
-// #error "Unsupported board: cas-i2c0 devicetree alias is not defined"
-// #define I2C0	""
-// #define PIN	0
-// #define FLAGS	0
-// #endif
+// This needs to match the 'label' given in the overlay file
+#define BMP388_NODELABEL "BMP388_I2C"
 
 void main(void) {
 
-	const struct device *i2c_dev = device_get_binding(DT_LABEL(I2C1_NODE));
+	const struct device *i2c_dev = device_get_binding(BMP388_NODELABEL);
 	struct sensor_value val;
-	uint32_t pressure = 0U;
+	struct sensor_value attr;
 
 	printk("BMP388 sensor application.\n");
 
@@ -47,19 +29,28 @@ void main(void) {
 		printk("Failed to get device binding.\n");
 		return;
 	} else {
-		printk("Got device binding\n");	
+		printk("Got device binding.\n");
 	}
 
 	if (!device_is_ready(i2c_dev)) {
 		printk("Device is not ready.\n");
 		return;
 	} else {
-		printk("Device is ready.\n")
+		printk("Device is ready.\n");
 	}
 
 	while (1) {
 
-		k_msleep(SLEEP_TIME_MS);
+		k_msleep(500);
+
+		/*
+		if (sensor_attr_get(i2c_dev, SENSOR_CHAN_PRESS, SENSOR_ATTR_SAMPLING_FREQUENCY, &attr) != 0) {
+			printk("Could not get frequency attribute.\n");
+			continue;
+		} else {
+			printk("Frequency attribute: %d\n.", attr.val1);
+		}
+		*/
 
 		if (sensor_sample_fetch(i2c_dev) != 0) {
 			printk("Sensor sample fetch fail.\n");
@@ -75,8 +66,7 @@ void main(void) {
 			printk("Sensor channel get succeeded.\n");
 		}
 
-		pressure = val.val1;
-		printk("sensor: pressure reading: %d\n kilopascal.", pressure);
+		printk("sensor: pressure reading: %d\n kilopascal.", val.val1);
 
 	}
 
