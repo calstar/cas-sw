@@ -1,6 +1,6 @@
 &i2c1 {
 	status = "okay";
-	bmp388@77 {
+	bmp388_i2c_node: bmp388@77 {
 		compatible = "bosch,bmp388";
 		reg = <0x77>;
 		label = "BMP388_I2C";

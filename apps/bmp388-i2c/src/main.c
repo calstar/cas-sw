@@ -13,12 +13,11 @@
 #include <drivers/sensor.h>
 #include <drivers/i2c.h>
 
-// This needs to match the 'label' given in the overlay file
-#define BMP388_NODELABEL "BMP388_I2C"
+#define DEVICE_NODE bmp388_i2c_node
 
 void main(void) {
 
-	const struct device *i2c_dev = device_get_binding(BMP388_NODELABEL);
+	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
 	struct sensor_value val;
 
 	printk("BMP388 sensor application.\n");
