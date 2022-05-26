@@ -9,7 +9,6 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
-#include <drivers/gpio.h>
 #include <sys/printk.h>
 #include <drivers/sensor.h>
 #include <drivers/i2c.h>
@@ -21,7 +20,6 @@ void main(void) {
 
 	const struct device *i2c_dev = device_get_binding(BMP388_NODELABEL);
 	struct sensor_value val;
-	struct sensor_value attr;
 
 	printk("BMP388 sensor application.\n");
 
@@ -42,15 +40,6 @@ void main(void) {
 	while (1) {
 
 		k_msleep(500);
-
-		/*
-		if (sensor_attr_get(i2c_dev, SENSOR_CHAN_PRESS, SENSOR_ATTR_SAMPLING_FREQUENCY, &attr) != 0) {
-			printk("Could not get frequency attribute.\n");
-			continue;
-		} else {
-			printk("Frequency attribute: %d\n.", attr.val1);
-		}
-		*/
 
 		if (sensor_sample_fetch(i2c_dev) != 0) {
 			printk("Sensor sample fetch fail.\n");
