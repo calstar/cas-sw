@@ -9,9 +9,7 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
-#include <sys/printk.h>
 #include <drivers/sensor.h>
-#include <drivers/i2c.h>
 
 #define DEVICE_NODE bmp388_i2c_node
 
@@ -38,7 +36,7 @@ void main(void) {
 
 	while (1) {
 
-		k_msleep(500);
+		k_msleep(1000);
 
 		if (sensor_sample_fetch(i2c_dev) != 0) {
 			printk("Sensor sample fetch fail.\n");
