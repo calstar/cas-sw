@@ -1,0 +1,8 @@
+&cas_onboard_i2c {
+	status = "okay";
+	bno055@77 {
+		compatible = "bosch,bno055";
+		reg = <0x77>;
+		label = "BNO055_I2C";
+	};
+};		

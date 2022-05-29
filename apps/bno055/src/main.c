@@ -9,7 +9,7 @@
 #include <devicetree.h>
 #include <drivers/gpio.h>
 #include <sys/printk.h>
-#include <drivers/sensor.h>
+#include <drivers/BNO055_driver/bno055.h>
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
