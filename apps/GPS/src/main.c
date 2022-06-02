@@ -5,9 +5,39 @@
  */
 
 #include <zephyr.h>
-#include <sys/printk.h>
+#include <device.h>
+#include <devicetree.h>
+#include <drivers/i2c.h>
 
-void main(void)
-{
-	printk("Hello World! %s\n", CONFIG_BOARD);
+#define DEVICE_NODE sam_i2c_node
+#define DEVICE_ADDR 0x77
+
+void main(void) {
+
+	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
+
+	if (i2c_dev == NULL) {
+		printk("Failed to get device binding.\n");
+		return;
+	} else {
+		printk("Got device binding.\n");
+	}
+
+	if (!device_is_ready(i2c_dev)) {
+		printk("Device is not ready.\n");
+		return;
+	} else {
+		printk("Device is ready.\n");
+	}
+
+	uint8_t buf [64];
+	int rc;
+
+	while (1) {
+
+		// Attempt to read something over the I2C bus.
+		rc = i2c_read(i2c_dev, buf, 1, DEVICE_ADDR);
+
+	}
+
 }

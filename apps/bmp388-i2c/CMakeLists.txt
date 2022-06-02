@@ -14,4 +14,5 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 # Update the following line to contain the name of the current application.
 project(bmp388-i2c)
 
+# If you have multiple source files, list all of them here.
 target_sources(app PRIVATE src/main.c)
