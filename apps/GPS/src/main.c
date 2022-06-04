@@ -9,38 +9,52 @@
 #include <devicetree.h>
 #include <drivers/i2c.h>
 
-#define DEVICE_NODE sam_i2c_node
-#define DEVICE_I2C_ADDR 0x77
+#define I2C_NODE i2c2
+#define DEVICE_I2C_ADDR 0x42
+
+// The sam-m8q has three registers (0xFD, 0xFE, and 0xFF) which can be
+// read through I2C. The 0xFF register contains the current data stream.
+#define DATA_REG 0xFF
+
+struct device* initialize_i2c_device() {
+	struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(I2C_NODE));
+	if (i2c_dev == NULL) {
+		printk("Failed to get device binding.\n");
+		return NULL;
+	}
+	if (!device_is_ready(i2c_dev)) {
+		printk("Device is not ready.\n");
+		return NULL;
+	}
+	return i2c_dev;
+}
+
+int ddc_read(struct device* i2c_device, int* read_buf) {
+
+}
+
+int ddc_write(struct device* i2c_device, int* write_buf) {
+
+}
+
+int ubx_configure(struct device* i2c_device) {
+
+}
 
 void main(void) {
 
-	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
-
-	if (i2c_dev == NULL) {
-		printk("Failed to get device binding.\n");
-		return;
-	} else {
-		printk("Got device binding.\n");
-	}
-
-	if (!device_is_ready(i2c_dev)) {
-		printk("Device is not ready.\n");
-		return;
-	} else {
-		printk("Device is ready.\n");
-	}
-
-	/*
-
-	uint8_t buf [64];
 	int rc;
-
-	while (1) {
-
-		rc = i2c_read(i2c_dev, buf, 1, DEVICE_I2C_ADDR);
-
+	struct device* i2c_dev = initialize_i2c_device();
+	if (i2c_dev == NULL) {
+		printk("Failed to initialize device.\n");
+		return;
 	}
-
-	*/
 
 }
+
+
+
+
+
+
+
