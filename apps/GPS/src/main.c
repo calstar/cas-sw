@@ -10,7 +10,7 @@
 #include <drivers/i2c.h>
 
 #define DEVICE_NODE sam_i2c_node
-#define DEVICE_ADDR 0x77
+#define DEVICE_I2C_ADDR 0x77
 
 void main(void) {
 
@@ -30,14 +30,17 @@ void main(void) {
 		printk("Device is ready.\n");
 	}
 
+	/*
+
 	uint8_t buf [64];
 	int rc;
 
 	while (1) {
 
-		// Attempt to read something over the I2C bus.
-		rc = i2c_read(i2c_dev, buf, 1, DEVICE_ADDR);
+		rc = i2c_read(i2c_dev, buf, 1, DEVICE_I2C_ADDR);
 
 	}
+
+	*/
 
 }
