@@ -1,8 +1,8 @@
-&i2c2 {
+&i2c3 {
 	status = "okay";
-	sam_i2c_node: sam@42 {
+	sam_m8q_node: sam_m8q@42 {
 		compatible = "u-blox,sam-m8q";
 		reg = <0x42>;
-		label = "SAM_I2C";
+		label = "SAM_M8Q";
 	};
 };

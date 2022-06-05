@@ -6,6 +6,8 @@ list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zeph
 list(APPEND SOC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 
+list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/SAM_M8Q_driver)
+
 # To add out-of-tree device drivers to the project, uncomment the following line.
 # list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/my_driver)
 
