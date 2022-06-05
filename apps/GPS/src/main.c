@@ -7,7 +7,7 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
-#include "../../cas-zephyr-drivers/zephyr/drivers/SAM_M8Q_driver/gnss.h"
+#include "sam_m8q.c"
 
 #define DEVICE_NODE sam_m8q_node
 
@@ -22,7 +22,7 @@ void main(void) {
 		printk("Device is not ready.\n");
 		return;
 	}
-	if (gnss_enable(dev, NULL) != 0) {
+	if (sam_m8q_enable(dev) != 0) {
 		printk("Error in enabling device.");
 		return;
 	}
@@ -31,10 +31,3 @@ void main(void) {
 	return;
 
 }
-
-
-
-
-
-
-
