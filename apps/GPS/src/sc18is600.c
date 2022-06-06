@@ -6,10 +6,11 @@
 #include <device.h>
 #include <drivers/spi.h>
 #include <drivers/gpio.h>
-#include "sc18is600.h"
 
-// GPIO pin C8 is used for CS pin
+#define SPI_NODE cas_onboard_spi
+
 const struct spi_cs_control translator_spi_cs_control = {
+	// GPIO pin C8 is used for CS pin
     .gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
     .gpio_pin = 8,
     .gpio_dt_flags = GPIO_ACTIVE_LOW,
@@ -24,17 +25,19 @@ const struct spi_config translator_spi_config = {
 struct device* get_spi_dev() {
 	struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(SPI_NODE));
 	if (spi_dev == NULL) {
-		printk("Failed to get device binding.\n");
+		printk("Error 1 in function sget_spi_dev() in file sc18is600.c\n");
 		return;
 	}
 	if (!device_is_ready(spi_dev)) {
-		printk("Device is not ready.\n");
+		printk("Error 2 in function sget_spi_dev() in file sc18is600.c\n");
 		return;
 	}
 	return spi_dev;
 }
 
 int i2c_write_translated(struct device *dev, uint8_t *buf, uint32_t num_bytes, uint16_t addr) {
+
+	// TODO: Fill in this function
 
 	int status;
 
