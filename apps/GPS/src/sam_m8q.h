@@ -47,8 +47,7 @@
 #define GNSS_DEAD_RECKONING_COMBINED 4
 #define TIME_ONLY_FIX 5
 
-//******* DEBUG/HELPING CONSTANTS ********
-#define MAX_MESSAGE_LENGTH 256
+#define MAX_MESSAGE_LENGTH 64
 
 typedef struct {
    uint8_t msgClass;

@@ -15,4 +15,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(GPS)
 
 # If you have multiple source files, list all of them here.
-target_sources(app PRIVATE src/main.c src/sam_m8q.c src/sc18is600.c src/sam_m8q.h)
+target_sources(app PRIVATE src/main.c src/sam_m8q.c src/sc18is600.c src/sam_m8q.h src/sc18is600.h)

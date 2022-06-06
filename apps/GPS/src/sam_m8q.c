@@ -38,7 +38,7 @@ int send_ubx_msg(struct device *dev, UbxMessage *msg) {
 	status = i2c_write_translated(dev, msg->payload, msg->length, SAM_M8Q_I2C_ADDR);
 	status = i2c_write_translated(dev, msg->checksumA, 1, SAM_M8Q_I2C_ADDR);
 	status = i2c_write_translated(dev, msg->checksumB, 1, SAM_M8Q_I2C_ADDR);
-	if (status != 0) { printk("Error 1 in function send_ubx_message() in file sam-m8q.c\n"); }
+	if (status != 0) { printk("Error in sam-m8q.c: Failed to send a UBX message over the I2C channel.\n"); }
 	return status;
 }
 
@@ -56,9 +56,13 @@ int sam_m8q_enable(struct device *dev) {
 	msg->payload[14] = 0x01;
 	computeChecksum(msg);
 	status = send_ubx_msg(dev, msg);
-	if (status != 0) { printk("Error 1 in function sam_m8q_enable() in file sam-m8q.c\n"); }
+	if (status != 0) { printk("Error in sam-m8q.c: Failed to send configuration message.\n"); }
 	return status;
 }
+
+// TODO: Implement these 2 functions
+int sam_m8q_sample_fetch(struct device *dev) {}
+int sam_m8q_channel_get(struct device *dev, PVTData channel, void *val) {}
 
 /*
 int sam_m8q_sample_fetch(struct device *dev) {}

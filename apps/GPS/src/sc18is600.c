@@ -6,53 +6,144 @@
 #include <device.h>
 #include <drivers/spi.h>
 #include <drivers/gpio.h>
-
-#define SPI_NODE cas_onboard_spi
-
-const struct spi_cs_control translator_spi_cs_control = {
-	// GPIO pin C8 is used for CS pin
-    .gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
-    .gpio_pin = 8,
-    .gpio_dt_flags = GPIO_ACTIVE_LOW,
-    .delay = 10,
-};
-
-const struct spi_config translator_spi_config = {
-    .operation = SPI_OP_MODE_MASTER,
-    .cs = &translator_spi_cs_control,
-};
+#include "sc18is600.h"
 
 struct device* get_spi_dev() {
 	struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(SPI_NODE));
 	if (spi_dev == NULL) {
-		printk("Error 1 in function sget_spi_dev() in file sc18is600.c\n");
+		printk("Error in sc18is600.c: Failed to get device binding.\n");
 		return;
 	}
 	if (!device_is_ready(spi_dev)) {
-		printk("Error 2 in function sget_spi_dev() in file sc18is600.c\n");
+		printk("Error in sc18is600.c: Device is not ready.\n");
 		return;
 	}
 	return spi_dev;
 }
 
-int i2c_write_translated(struct device *dev, uint8_t *buf, uint32_t num_bytes, uint16_t addr) {
+void clear_write_buf_set() {
+	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) {
+		write_buf_contents[i] = 0x00;
+	}
+	write_buf_length = MAXIMUM_DATA_LENGTH;
+	write_buf->buf = write_buf_contents;
+	write_buf->len = write_buf_length;
+	write_buf_set->buffers = write_buf;
+	write_buf_set->count = 1;
+}
 
-	// TODO: Fill in this function
+void clear_read_buf_set() {
+	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) {
+		read_buf_contents[i] = 0x00;
+	}
+	read_buf_length = MAXIMUM_DATA_LENGTH;
+	read_buf->buf = read_buf_contents;
+	read_buf->len = read_buf_length;
+	read_buf_set->buffers = read_buf;
+	read_buf_set->count = 1;
+}
+
+uint8_t* get_read_buffer_ptr() {
+	return read_buf_set->buffers->buf;
+}
+
+int i2c_write_translated(struct device *dev, uint8_t *i2c_data_buf, uint8_t i2c_num_bytes, uint8_t i2c_addr) {
 
 	int status;
 
-	struct spi_buf *write_buf;
-	write_buf->buf = buf;
-	write_buf->len = num_bytes;
+	clear_write_buf_set();
+	clear_read_buf_set();
 
-	status = spi_write(dev, &translator_spi_config, write_buf);
+	write_buf_contents[0] = WRITE_COMMAND;
+	write_buf_contents[1] = i2c_num_bytes;
+	write_buf_contents[2] = i2c_addr;
+	for (uint8_t i=0; i<i2c_num_bytes; i++) {
+		write_buf_contents[i+3] = i2c_data_buf[i];
+	}
+	write_buf_length = i2c_num_bytes + 3;
 
-	return 0;
+	status = spi_transceive(dev, &translator_spi_config, write_buf_set, read_buf_set);
+
+	status = check_i2c_status(dev);
+
+	if (status != 0) printk("Error in sc18is600.c: SPI-write to I2C-write translation failed.\n");
+
+	return status;
 	
 }
 
-int i2c_read_translated(struct device *dev, uint8_t *buf, uint32_t num_bytes, uint16_t addr) {
+int i2c_read_translated(struct device *dev, uint8_t *i2c_data_buf, uint8_t i2c_num_bytes, uint8_t i2c_addr) {
 
-	return 0;
+	int status;
+
+	clear_write_buf_set();
+	clear_read_buf_set();
+
+	write_buf_contents[0] = READ_COMMAND;
+	write_buf_contents[1] = i2c_num_bytes;
+	write_buf_contents[2] = i2c_addr;
+	write_buf_length = 3;
+
+	status = spi_transceive(dev, &translator_spi_config, write_buf_set, read_buf_set);
+
+	clear_write_buf_set();
+
+	write_buf_contents[0] = READ_BUFFER_COMMAND;
+	write_buf_length = 1;
+	read_buf_length = i2c_num_bytes;
+
+	status = spi_transceive(dev, &translator_spi_config, write_buf_set, read_buf_set);
+
+	status = check_i2c_status(dev);
+
+	if (status != 0) printk("Error in sc18is600.c: SPI-read to I2C-read translation failed.\n");
+
+	return status;
 	
 }
+
+uint8_t read_internal_reg(struct device *dev, uint8_t reg_address) {
+
+	int status;
+
+	clear_write_buf_set();
+	clear_read_buf_set();
+
+	uint8_t dummy_byte = 0x00;
+
+	write_buf_contents[0] = REG_READ_COMMAND;
+	write_buf_contents[1] = reg_address;
+	write_buf_contents[2] = dummy_byte;
+	write_buf_length = 3;
+	read_buf_length = 1;
+
+	status = spi_transceive(dev, &translator_spi_config, write_buf_set, read_buf_set);
+
+	if (status != 0) printk("Error in sc18is600.c: Failed to read internal register.\n");
+
+	return get_read_buffer_ptr()[0];
+
+}
+
+int check_i2c_status(struct device *dev) {
+	int status;
+	uint8_t error_code = read_internal_reg(dev, I2C_STATUS_REG);
+	switch (error_code) {
+		case I2C_NO_ERR : status = 0; break;
+		case I2C_ERR_NO_RESPONSE_1 : status = 1; printk("Error in sc18is600.c: I2C no response (error 1).\n");
+		case I2C_ERR_NO_RESPONSE_2 : status = 2; printk("Error in sc18is600.c: I2C no response (error 2).\n");
+		case I2C_ERR_BUSY : status = 3; printk("Error in sc18is600.c: I2C device is busy.\n");
+		case I2C_ERR_TIMEOUT : status = 4; printk("Error in sc18is600.c: I2C timeout.\n");
+		case I2C_ERR_INVALID_LENGTH : status = 5; printk("Error in sc18is600.c: invalid I2C message length.\n");
+	}
+	return status;
+}
+
+
+
+
+
+
+
+
+
