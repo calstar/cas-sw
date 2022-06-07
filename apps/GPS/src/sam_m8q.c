@@ -2,11 +2,16 @@
  * 
  * Datasheet: https://content.u-blox.com/sites/default/files/SAM-M8Q_DataSheet_%28UBX-16012619%29.pdf
  * Protocol Specification: https://content.u-blox.com/sites/default/files/products/documents/u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221.pdf
+ *
+ * Note: for more information about how this code works, please
+ * see pages 168-179 of the protocol specification.
  */
 
 #include <device.h>
 #include "sam_m8q.h"
 
+/* Copied from this implementation:
+ * https://github.com/melopero/Melopero_UBX/blob/master/src/Melopero_UBX.cpp */
 void computeChecksum(UbxMessage *msg){
   msg->checksumA = msg->msgClass;
   msg->checksumB = msg->checksumA;
@@ -22,7 +27,8 @@ void computeChecksum(UbxMessage *msg){
   }
 }
 
-/* Resets the payload to all zeroes*/
+/* Copied from this implementation:
+ * https://github.com/melopero/Melopero_UBX/blob/master/src/Melopero_UBX.cpp */
 void resetPayload(UbxMessage *msg){
   for (int i = 0; i < msg->length; i++)
     msg->payload[i] = 0;
@@ -42,9 +48,10 @@ int send_ubx_msg(struct device *dev, UbxMessage *msg) {
 	return status;
 }
 
+/* This function sends a configuration message to the sam-m8q which sets
+ * the communication channel to be ubx-only. For more information, see
+ * page 252 of the protocol specification. */
 int sam_m8q_enable(struct device *dev) {
-	// send a configuration message which sets the communication
-	// channel to be UBX-only
 	int status = 0;
 	UbxMessage *msg;
 	msg->msgClass = CFG_CLASS;
@@ -60,16 +67,13 @@ int sam_m8q_enable(struct device *dev) {
 	return status;
 }
 
-// TODO: Implement these 2 functions
-int sam_m8q_sample_fetch(struct device *dev) {}
-int sam_m8q_channel_get(struct device *dev, PVTData channel, void *val) {}
+int receive_ubx_msg(struct device *dev, uint8_t length, uint8_t *buf) {
+	// TODO
+}
 
-/*
-int sam_m8q_sample_fetch(struct device *dev) {}
-int sam_m8q_channel_get(struct device *dev, enum gnss_channel chan, void *val) {}
-int sam_m8q_attr_get(struct device *dev, enum gnss_channel chan, enum gnss_attribute attr, void *val) {}
-int sam_m8q_attr_set(struct device *dev, enum gnss_channel chan, enum gnss_attribute attr, void *val) {}
-int sam_m8q_trigger_set(struct device *dev, struct gnss_trigger *trig, gnss_trigger_handler_t handler) {}
-*/
+Position* sam_m8q_get_position(struct device *dev) {
+	// TODO
+}
+
 
 
