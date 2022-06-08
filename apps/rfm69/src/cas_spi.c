@@ -48,22 +48,51 @@ struct device* get_spi_dev(int spi_bus) {
 
 }
 
-void clear_write_buf_set() {
-	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { write_buf_contents[i] = 0x00; }
-	write_buf_length = 0;
-	write_buf->buf = write_buf_contents;
-	write_buf->len = write_buf_length;
-	write_buf_set->buffers = write_buf;
-	write_buf_set->count = 1;
+struct spi_buf_set* create_spi_buf_set() {
+
+	struct spi_buf_set *my_buf_set;
+	struct spi_buf *my_buf;
+	uint8_t my_buf_contents [MAXIMUM_DATA_LENGTH];
+
+	my_buf_set->buffers = my_buf;
+	my_buf_set->count = 1;
+
+	my_buf->buf = my_buf_contents;
+	my_buf->len = 0;
+
+	clear_spi_buf_set(my_buf_set);
+
+	return my_buf_set;
+
 }
 
-void clear_read_buf_set() {
-	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { read_buf_contents[i] = 0x00; }
-	read_buf_length = 0;
-	read_buf->buf = read_buf_contents;
-	read_buf->len = read_buf_length;
-	read_buf_set->buffers = read_buf;
-	read_buf_set->count = 1;
+void clear_spi_buf_set(struct spi_buf_set *my_buf_set) {
+
+	struct spi_buf *my_buf = my_buf_set->buffers;
+	uint8_t *my_buf_contents = my_buf_set->buffers->buf;
+
+	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { my_buf_contents[i] = 0x00; }
+
+	my_buf->len = 0;
+
+}
+
+uint8_t* get_buf_contents(struct spi_buf_set *my_buf_set) {
+	return my_buf_set->buffers->buf;
+}
+
+int get_buf_length(struct spi_buf_set *my_buf_set) {
+	return my_buf_set->buffers->len;
+}
+
+void set_buf_contents(struct spi_buf_set *my_buf_set, uint8_t *new_buf_contents) {
+	for (int i=0; i<sizeof(new_buf_contents); i++) {
+		((my_buf_set->buffers->buf)[i]) = new_buf_contents[i];
+	}
+}
+
+void set_buf_length(struct spi_buf_set *my_buf_set, int new_buf_length) {
+	my_buf_set->buffers->len = new_buf_length;
 }
 
 

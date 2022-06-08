@@ -4,8 +4,10 @@
 
 void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_address, uint8_t value) {
 
-	clear_write_buf_set();
-	clear_read_buf_set();
+	struct spi_buf_set *write_buf_set = create_spi_buf_set();
+	struct spi_buf_set *read_buf_set = create_spi_buf_set();
+	uint8_t *write_buf_contents;
+	int write_buf_length;
 
 	// Set MSB to 1, indicates a write
 	reg_address |= 0x80;
@@ -13,6 +15,9 @@ void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_
 	write_buf_contents[0] = reg_address;
 	write_buf_contents[1] = value;
 	write_buf_length = 2;
+
+	set_buf_contents(write_buf_set, write_buf_contents);
+	set_buf_length(write_buf_set, write_buf_length);
 
 	int status = spi_transceive(dev, cfg, write_buf_set, read_buf_set);
 
@@ -24,8 +29,11 @@ void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_
 
 uint8_t read_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_address) {
 
-	clear_write_buf_set();
-	clear_read_buf_set();
+	struct spi_buf_set *write_buf_set = create_spi_buf_set();
+	struct spi_buf_set *read_buf_set = create_spi_buf_set();
+	uint8_t *write_buf_contents;
+	int write_buf_length;
+	int read_buf_length;
 
 	// Set MSB to 0, indicates a read
 	reg_address &= 0x7F;
@@ -34,11 +42,15 @@ uint8_t read_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t re
 	write_buf_length = 1;
 	read_buf_length = 1;
 
+	set_buf_contents(write_buf_set, write_buf_contents);
+	set_buf_length(write_buf_set, write_buf_length);
+	set_buf_length(read_buf_set, read_buf_length);
+
 	int status = spi_transceive(dev, cfg, write_buf_set, read_buf_set);
 
 	if (status != 0) printk("Error in rfm69.c: Failed to read internal register.\n");
 
-	return read_buf_contents[0];
+	return get_buf_contents(read_buf_set)[0];
 
 }
 
