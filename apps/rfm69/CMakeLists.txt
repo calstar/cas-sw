@@ -15,4 +15,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(rfm69)
 
 # If you have multiple source files, list all of them here.
-target_sources(app PRIVATE src/main.c src/spi.c src/RFM69.c src/RFM69registers.h src/RFM69.h)
+target_sources(app PRIVATE src/main.c src/rfm69.c src/cas_spi.c src/rfm69.h src/cas_spi.h src/RFM69registers.h)
