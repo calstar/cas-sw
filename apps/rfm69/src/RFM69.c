@@ -4,23 +4,15 @@
 
 void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_address, uint8_t value) {
 
-	struct spi_buf_set *write_buf_set = create_spi_buf_set();
-	struct spi_buf_set *read_buf_set = create_spi_buf_set();
-	uint8_t *write_buf_contents;
-	int write_buf_length;
-
 	// Set MSB to 1, indicates a write
 	reg_address |= 0x80;
 
-	write_buf_contents[0] = reg_address;
-	write_buf_contents[1] = value;
-	write_buf_length = 2;
+	uint8_t send_buf[2] = { reg_address, value };
+	int send_length = 2;
+	uint8_t recieve_buf[1] = { 0x00 };
+	int recieve_length = 0;
 
-	set_buf_contents(write_buf_set, write_buf_contents);
-	set_buf_length(write_buf_set, write_buf_length);
-
-	int status = spi_transceive(dev, cfg, write_buf_set, read_buf_set);
-
+	int status = cas_spi_transceive(dev, cfg, send_buf, send_length, recieve_buf, recieve_length);
 	if (status != 0) printk("Error in rfm69.c: Failed to write internal register.\n");
 
 	return;
@@ -29,28 +21,18 @@ void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_
 
 uint8_t read_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_address) {
 
-	struct spi_buf_set *write_buf_set = create_spi_buf_set();
-	struct spi_buf_set *read_buf_set = create_spi_buf_set();
-	uint8_t *write_buf_contents;
-	int write_buf_length;
-	int read_buf_length;
-
 	// Set MSB to 0, indicates a read
 	reg_address &= 0x7F;
 
-	write_buf_contents[0] = reg_address;
-	write_buf_length = 1;
-	read_buf_length = 1;
+	uint8_t send_buf[1] = { reg_address };
+	int send_length = 1;
+	uint8_t recieve_buf[1] = { 0x00 };
+	int recieve_length = 1;
 
-	set_buf_contents(write_buf_set, write_buf_contents);
-	set_buf_length(write_buf_set, write_buf_length);
-	set_buf_length(read_buf_set, read_buf_length);
-
-	int status = spi_transceive(dev, cfg, write_buf_set, read_buf_set);
-
+	int status = cas_spi_transceive(dev, cfg, send_buf, send_length, recieve_buf, recieve_length);
 	if (status != 0) printk("Error in rfm69.c: Failed to read internal register.\n");
 
-	return get_buf_contents(read_buf_set)[0];
+	return recieve_buf[0];
 
 }
 
@@ -62,13 +44,14 @@ void set_payload_length(struct device *dev, struct spi_config *cfg, uint8_t payl
 	write_internal_reg(dev, cfg, REG_PAYLOADLENGTH, payload_length);
 }
 
-void transmit_packet(struct device *dev, struct spi_config *cfg, uint8_t *payload, uint8_t address) {
+void transmit_packet(struct device *dev, struct spi_config *cfg, 
+					 uint8_t *payload, uint8_t receiver_network, uint8_t receiver_address) {
 
 	set_payload_length(dev, cfg, PAYLOAD_LENGTH);
 
 	for (int i=0; i<8; i++) { write_internal_reg(dev, cfg, REG_FIFO, PREAMBLE_BYTE); }
-	write_internal_reg(dev, cfg, REG_FIFO, NETWORKID);
-	write_internal_reg(dev, cfg, REG_FIFO, TONODEID);
+	write_internal_reg(dev, cfg, REG_FIFO, receiver_network);
+	write_internal_reg(dev, cfg, REG_FIFO, receiver_address);
 	for (int i=0; i<PAYLOAD_LENGTH; i++) { write_internal_reg(dev, cfg, REG_FIFO, payload[i]); }
 
 	set_mode(dev, cfg, RF_OPMODE_TRANSMITTER);

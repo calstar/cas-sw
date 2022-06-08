@@ -3,6 +3,27 @@
 #include <drivers/gpio.h>
 #include "cas_spi.h"
 
+uint8_t write_buf_contents[MAXIMUM_DATA_LENGTH];
+uint8_t read_buf_contents[MAXIMUM_DATA_LENGTH];
+
+struct spi_buf write_buf = {
+	.buf = write_buf_contents,
+	.len = 0,
+};
+struct spi_buf read_buf = {
+	.buf = read_buf_contents,
+	.len = 0,
+};
+
+struct spi_buf_set write_buf_set = {
+	.buffers = &write_buf,
+	.count = 1,
+};
+struct spi_buf_set read_buf_set = {
+	.buffers = &read_buf,
+	.count = 1,
+};
+
 struct spi_config* get_spi_config(char gpio_bank, int gpio_pin_num) {
 
 	struct spi_cs_control *ctrl;
@@ -35,12 +56,12 @@ struct device* get_spi_dev(int spi_bus) {
 	}
 
 	if (spi_dev == NULL) {
-		printk("Error in spi.c: Failed to get device binding.\n");
+		printk("Error in cas_spi.c: Failed to get device binding.\n");
 		return NULL;
 	}
 
 	if (!device_is_ready(spi_dev)) {
-		printk("Error in spi.c: Device is not ready.\n");
+		printk("Error in cas_spi.c: Device is not ready.\n");
 		return NULL;
 	}
 
@@ -48,52 +69,40 @@ struct device* get_spi_dev(int spi_bus) {
 
 }
 
-struct spi_buf_set* create_spi_buf_set() {
-
-	struct spi_buf_set *my_buf_set;
-	struct spi_buf *my_buf;
-	uint8_t my_buf_contents [MAXIMUM_DATA_LENGTH];
-
-	my_buf_set->buffers = my_buf;
-	my_buf_set->count = 1;
-
-	my_buf->buf = my_buf_contents;
-	my_buf->len = 0;
-
-	clear_spi_buf_set(my_buf_set);
-
-	return my_buf_set;
-
+void clear_write_buf_set() {
+	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { write_buf_contents[i] = 0x00; }
+	write_buf.len = 0;
+}
+void clear_read_buf_set() {
+	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { read_buf_contents[i] = 0x00; }
+	read_buf.len = 0;
 }
 
-void clear_spi_buf_set(struct spi_buf_set *my_buf_set) {
+int cas_spi_transceive(struct device *dev, struct spi_config *cfg, 
+						uint8_t *send_buf, uint8_t send_length,
+						uint8_t *receive_buf, uint8_t receive_length) {
 
-	struct spi_buf *my_buf = my_buf_set->buffers;
-	uint8_t *my_buf_contents = my_buf_set->buffers->buf;
-
-	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { my_buf_contents[i] = 0x00; }
-
-	my_buf->len = 0;
-
-}
-
-uint8_t* get_buf_contents(struct spi_buf_set *my_buf_set) {
-	return my_buf_set->buffers->buf;
-}
-
-int get_buf_length(struct spi_buf_set *my_buf_set) {
-	return my_buf_set->buffers->len;
-}
-
-void set_buf_contents(struct spi_buf_set *my_buf_set, uint8_t *new_buf_contents) {
-	for (int i=0; i<sizeof(new_buf_contents); i++) {
-		((my_buf_set->buffers->buf)[i]) = new_buf_contents[i];
+	if (send_length > MAXIMUM_DATA_LENGTH || receive_length > MAXIMUM_DATA_LENGTH) {
+		printk("Error in cas_spi.c: write or read length is too long.\n");
+		return -1;
 	}
+
+	clear_write_buf_set();
+	clear_read_buf_set();
+
+	for (int i=0; i<send_length; i++) { write_buf_contents[i] = send_buf[i]; }
+	write_buf.len = send_length;
+	read_buf.len = receive_length;
+
+	int status = spi_transceive(dev, cfg, &write_buf_set, &read_buf_set);
+	if (status != 0) printk("Error in cas_spi.c: Failed to transceive over spi.\n");
+
+	for (int i=0; i<receive_length; i++) { receive_buf[i] = read_buf_contents[i]; }
+
+	return status;
+
 }
 
-void set_buf_length(struct spi_buf_set *my_buf_set, int new_buf_length) {
-	my_buf_set->buffers->len = new_buf_length;
-}
 
 
 

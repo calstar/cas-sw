@@ -23,16 +23,12 @@ struct spi_config* get_spi_config(char gpio_bank, int gpio_pin_num);
 
 struct device* get_spi_dev(int spi_bus);
 
-struct spi_buf_set* create_spi_buf_set();
+void clear_write_buf_set();
 
-void clear_spi_buf_set(struct spi_buf_set *my_buf_set);
+void clear_read_buf_set();
 
-uint8_t* get_buf_contents(struct spi_buf_set *my_buf_set);
-
-int get_buf_length(struct spi_buf_set *my_buf_set);
-
-void set_buf_contents(struct spi_buf_set *my_buf_set, uint8_t *new_buf_contents);
-
-void set_buf_length(struct spi_buf_set *my_buf_set, int new_buf_length);
+int cas_spi_transceive(struct device *dev, struct spi_config *cfg, 
+					   uint8_t *send_buf, uint8_t send_length,
+					   uint8_t *receive_buf, uint8_t receive_length);
 
 #endif
