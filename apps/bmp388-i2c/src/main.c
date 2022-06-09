@@ -15,10 +15,10 @@
 
 void main(void) {
 
+	printk("BMP388 sensor application.\n");
+
 	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
 	struct sensor_value val;
-
-	printk("BMP388 sensor application.\n");
 
 	if (i2c_dev == NULL) {
 		printk("Failed to get device binding.\n");
@@ -52,7 +52,7 @@ void main(void) {
 			printk("Sensor channel get succeeded.\n");
 		}
 
-		printk("sensor: pressure reading: %d\n kilopascal.", val.val1);
+		printk("sensor: pressure reading: %d kilopascal.\n", val.val1);
 
 	}
 
