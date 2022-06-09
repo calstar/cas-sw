@@ -27,6 +27,8 @@ void clear_send_buffer() {
 
 void main(void) {
 
+	printk(" --- RFM69 Radio Transciever ---\n");
+
 	struct device *dev = get_spi_dev(SPI_BUS);
 	struct spi_config *cfg = get_spi_config(CS_BANK, CS_PIN);
 

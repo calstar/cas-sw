@@ -95,7 +95,7 @@ int cas_spi_transceive(struct device *dev, struct spi_config *cfg,
 	read_buf.len = receive_length;
 
 	int status = spi_transceive(dev, cfg, &write_buf_set, &read_buf_set);
-	if (status != 0) printk("Error in cas_spi.c: Failed to transceive over spi.\n");
+	if (status != 0) printk("Error in cas_spi.c (status %d): Failed to transceive over spi.\n", status);
 
 	for (int i=0; i<receive_length; i++) { receive_buf[i] = read_buf_contents[i]; }
 
