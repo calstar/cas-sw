@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2016 Intel Corporation
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
- // Documentation: https://docs.zephyrproject.org/3.0.0/reference/devicetree/bindings/sensor/bosch%2Cbmp388-i2c.html#dtbinding-bosch-bmp388-i2c
-
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
@@ -15,51 +7,44 @@
 
 void main(void) {
 
-	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
-	sensor_sample_fetch(i2c_dev);
-	return;
-
-	/*
-
 	printk("BMP388 sensor application.\n");
 
-	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
-	struct sensor_value val;
+	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
+	struct sensor_value pressure_value;
+	struct sensor_value temperature_value;
 
-	if (i2c_dev == NULL) {
+	if (dev == NULL) {
 		printk("Failed to get device binding.\n");
 		return;
-	} else {
-		printk("Got device binding.\n");
 	}
 
-	if (!device_is_ready(i2c_dev)) {
+	if (!device_is_ready(dev)) {
 		printk("Device is not ready.\n");
 		return;
-	} else {
-		printk("Device is ready.\n");
 	}
 
 	while (1) {
 
-		if (sensor_sample_fetch(i2c_dev) != 0) {
+		k_msleep(100);
+
+		if (sensor_sample_fetch(dev) != 0) {
 			printk("Sensor sample fetch fail.\n");
 			continue;
-		} else {
-			printk("Sensor sample fetch succeeded.\n");
 		}
 
-		if (sensor_channel_get(i2c_dev, SENSOR_CHAN_PRESS, &val) != 0) {
+		if (sensor_channel_get(dev, SENSOR_CHAN_PRESS, &pressure_value) != 0) {
 			printk("Sensor channel get fail.\n");
 			continue;
-		} else {
-			printk("Sensor channel get succeeded.\n");
 		}
 
-		printk("sensor: pressure reading: %d kilopascal.\n", val.val1);
+		if (sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, &temperature_value) != 0) {
+			printk("Sensor channel get fail.\n");
+			continue;
+		}
+
+		printk("Pressure:    %d kilopascal.\n", pressure_value.val1);
+		printk("Temperature: %d degrees Celsius.\n", temperature_value.val1);
 
 	}
-
-	*/
 
 }
