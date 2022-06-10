@@ -15,6 +15,12 @@
 
 void main(void) {
 
+	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
+	sensor_sample_fetch(i2c_dev);
+	return;
+
+	/*
+
 	printk("BMP388 sensor application.\n");
 
 	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
@@ -36,8 +42,6 @@ void main(void) {
 
 	while (1) {
 
-		k_msleep(1000);
-
 		if (sensor_sample_fetch(i2c_dev) != 0) {
 			printk("Sensor sample fetch fail.\n");
 			continue;
@@ -55,5 +59,7 @@ void main(void) {
 		printk("sensor: pressure reading: %d kilopascal.\n", val.val1);
 
 	}
+
+	*/
 
 }
