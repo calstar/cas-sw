@@ -1,42 +1,21 @@
-Blinky
+BMP388 Breakout Board application
 ######
 
-Overview
-********
+This application uses the bmp388 to report pressure and temperature readings.
 
-Blinky is a simple application which blinks an LED forever using the :ref:`GPIO
-API <gpio_api>`. The source code shows how to configure GPIO pins as outputs,
-then turn them on and off.
+In order to run this application, you need to connect the adafruit bmp388 breakout board to the pins on the cas-bus:
 
-See :ref:`pwm-blinky-sample` for a sample which uses the PWM API to blink an
-LED.
+* Connect the breakout board's VIN to any +3V3 pin on the cas-bus 
 
-.. _blinky-sample-requirements:
+* Connect the breakout board's GND to any GND pin on the cas-bus
 
-Requirements
-************
+* Connect the breakout board's SCK to A13 (I2C1_SCL) on the cas-bus
 
-You will see this error if you try to build Blinky for an unsupported board:
+* Connect the breakout board's SDI to A14 (I2C1_SDA) on the cas-bus
 
-.. code-block:: none
 
-   Unsupported board: led0 devicetree alias is not defined
+There is also one other thing you need to do: Go to the file zephyrproject/zephyr/drivers/sensor/bmp388/bmp388.c, and then add the following statement at line number 362:
 
-The board must have an LED connected via a GPIO pin. These are called "User
-LEDs" on many of Zephyr's :ref:`boards`. The LED must be configured using the
-``led0`` :ref:`devicetree <dt-guide>` alias. This is usually done in the
-:ref:`BOARD.dts file <devicetree-in-out-files>` or a :ref:`devicetree overlay
-<set-devicetree-overlays>`.
+bmp388_byte_write(dev, BMP388_REG_PWR_CTRL, 0x23);
 
-Building and Running
-********************
-
-Build and flash Blinky as follows, changing ``reel_board`` for your board:
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/basic/blinky
-   :board: reel_board
-   :goals: build flash
-   :compact:
-
-After flashing, the LED starts to blink. Blinky does not print to the console.
+After doing this, build and flash the application, and it should run correctly.
