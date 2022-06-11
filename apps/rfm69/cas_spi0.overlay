@@ -1,0 +1,9 @@
+&spi2 {
+	status = "okay";
+	sck-pin = <&spi2_sck_pb10>;
+	mosi-pin = <&spi2_mosi_pc3>;
+	miso-pin = <&spi2_miso_pc2>;
+	ss-pin = <&spi2_nss_pb9>;
+	spi-max-frequency = <4000000>;
+	label = "SPI2";
+};		

@@ -6,9 +6,6 @@
 
 // This application uses spi bus number 2, aka cas_spi0
 #define SPI_NODE cas_spi0
-// The CS pin on the microcontroller for this SPI bus is GPIO pin B9
-#define CS_BANK gpiob
-#define CS_PIN 9
 
 // Usually, this should be either 433 MHz or 915 MHz
 #define FREQUENCY RF69_915MHZ
@@ -40,8 +37,11 @@ void main(void) {
 		return NULL;
 	}
 
-	struct device *cs_gpio_device = DEVICE_DT_GET(DT_NODELABEL(CS_BANK));
-	struct spi_config *cfg = get_spi_config(cs_gpio_device, CS_PIN);
+	const struct spi_config cfg = {
+		.frequency = 4000000,
+		.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB,
+		.slave = 0,
+	};
 
 	clear_send_buffer();
 	send_buffer[0] = 0xDE;
@@ -50,7 +50,7 @@ void main(void) {
 	send_buffer[3] = 0xEF;
 
 	// Remove this line
-	while (1) { cas_spi_transceive(dev, cfg, &send_buffer, 4, NULL, 0); }
+	while (1) { cas_spi_transceive(dev, &cfg, &send_buffer, 4, NULL, 0); }
 
 	// Uncomment this line
 	// transmit_packet(dev, cfg, &send_buffer, NETWORKID, TONODEID);

@@ -10,8 +10,6 @@
  * might have stricter limits on the amount of data it can recieve. */
 #define MAXIMUM_DATA_LENGTH 64
 
-struct spi_config* get_spi_config(struct device *gpio_device, int gpio_pin_num);
-
 void clear_write_buf_set();
 
 void clear_read_buf_set();

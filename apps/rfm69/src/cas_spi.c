@@ -24,25 +24,6 @@ struct spi_buf_set read_buf_set = {
 	.count = 1,
 };
 
-struct spi_config* get_spi_config(struct device *gpio_device, int gpio_pin_num) {
-
-	struct spi_cs_control ctrl = {
-		.gpio_dev = gpio_device,
-		.gpio_pin = gpio_pin_num,
-		.gpio_dt_flags = GPIO_ACTIVE_LOW,
-	};
-
-	struct spi_config cfg = {
-		.frequency = 1000000,
-		.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,
-		.slave = 0,
-		.cs = &ctrl,
-	};
-
-	return &cfg;
-
-}
-
 void clear_write_buf_set() {
 	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { write_buf_contents[i] = 0x00; }
 	write_buf.len = 0;
