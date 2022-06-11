@@ -1,5 +1,3 @@
-.. _blinky-sample:
-
 Blinky
 ######
 
