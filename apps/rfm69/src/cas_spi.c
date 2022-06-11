@@ -24,48 +24,22 @@ struct spi_buf_set read_buf_set = {
 	.count = 1,
 };
 
-struct spi_config* get_spi_config(char gpio_bank, int gpio_pin_num) {
+struct spi_config* get_spi_config(struct device *gpio_device, int gpio_pin_num) {
 
-	struct spi_cs_control *ctrl;
-	struct spi_config *cfg;
+	struct spi_cs_control ctrl = {
+		.gpio_dev = gpio_device,
+		.gpio_pin = gpio_pin_num,
+		.gpio_dt_flags = GPIO_ACTIVE_LOW,
+	};
 
-	switch (gpio_bank) {
-		case 'A' : ctrl->gpio_dev = DEVICE_DT_GET(DT_NODELABEL(GPIO_BANK_A));
-		case 'B' : ctrl->gpio_dev = DEVICE_DT_GET(DT_NODELABEL(GPIO_BANK_B));
-		case 'C' : ctrl->gpio_dev = DEVICE_DT_GET(DT_NODELABEL(GPIO_BANK_C));
-		case 'D' : ctrl->gpio_dev = DEVICE_DT_GET(DT_NODELABEL(GPIO_BANK_D));
-	}
-	ctrl->gpio_pin = gpio_pin_num;
-	ctrl->gpio_dt_flags = GPIO_ACTIVE_LOW;
+	struct spi_config cfg = {
+		.frequency = 1000000,
+		.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,
+		.slave = 0,
+		.cs = &ctrl,
+	};
 
-	cfg->operation = SPI_OP_MODE_MASTER;
-	cfg->cs = ctrl;
-
-	return cfg;
-
-}
-
-struct device* get_spi_dev(int spi_bus) {
-
-	struct device *spi_dev;
-
-	switch (spi_bus) {
-		case 1 : spi_dev = DEVICE_DT_GET(DT_NODELABEL(SPI1_NODE));
-		case 2 : spi_dev = DEVICE_DT_GET(DT_NODELABEL(SPI2_NODE));
-		case 3 : spi_dev = DEVICE_DT_GET(DT_NODELABEL(SPI3_NODE));
-	}
-
-	if (spi_dev == NULL) {
-		printk("Error in cas_spi.c: Failed to get device binding.\n");
-		return NULL;
-	}
-
-	if (!device_is_ready(spi_dev)) {
-		printk("Error in cas_spi.c: Device is not ready.\n");
-		return NULL;
-	}
-
-	return spi_dev;
+	return &cfg;
 
 }
 
@@ -95,7 +69,7 @@ int cas_spi_transceive(struct device *dev, struct spi_config *cfg,
 	read_buf.len = receive_length;
 
 	int status = spi_transceive(dev, cfg, &write_buf_set, &read_buf_set);
-	if (status != 0) printk("Error in cas_spi.c (status %d): Failed to transceive over spi.\n", status);
+	if (status != 0) printk("Error in cas_spi.c: Failed to transceive over spi.\n");
 
 	for (int i=0; i<receive_length; i++) { receive_buf[i] = read_buf_contents[i]; }
 

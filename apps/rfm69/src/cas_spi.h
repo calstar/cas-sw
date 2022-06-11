@@ -10,18 +10,7 @@
  * might have stricter limits on the amount of data it can recieve. */
 #define MAXIMUM_DATA_LENGTH 64
 
-#define GPIO_BANK_A gpioa
-#define GPIO_BANK_B gpiob
-#define GPIO_BANK_C gpioc
-#define GPIO_BANK_D gpiod
-
-#define SPI1_NODE cas_spihs
-#define SPI2_NODE cas_spi0
-#define SPI3_NODE cas_onboard_spi
-
-struct spi_config* get_spi_config(char gpio_bank, int gpio_pin_num);
-
-struct device* get_spi_dev(int spi_bus);
+struct spi_config* get_spi_config(struct device *gpio_device, int gpio_pin_num);
 
 void clear_write_buf_set();
 
