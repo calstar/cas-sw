@@ -30,7 +30,7 @@ void dw_transceive(const struct device *spi, struct spi_config* spi_cfg, uint8_t
                 .count = 2
         };
         int status = spi_transceive(spi, spi_cfg, &tx, &rx);
-        printk("Status: %d", status);
+        printk("Status of spi_transceive: %d\n", status);
 }
 
 void main(void) {
@@ -42,11 +42,10 @@ void main(void) {
     	.gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpiob)),
     	.gpio_pin = 9,
     	.gpio_dt_flags = GPIO_ACTIVE_LOW,
-    	.delay = 10,
     };
 
 	const struct spi_config cfg = {
-		.frequency = 3600000U,
+		.frequency = 1000000,
 		.operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8),
 		.cs = &ctrl,
 	};
@@ -63,8 +62,12 @@ void main(void) {
 		return NULL;
 	}
 
-	uint8_t recieve_buffer[4] = { 0x00, 0x00, 0x00, 0x00 };
+	while (1) {	
 
-	dw_transceive(spi_dev, &cfg, 0x55, &recieve_buffer, 4);
+		uint8_t recieve_buffer[4] = { 0x00, 0x00, 0x00, 0x00 };
+
+		dw_transceive(spi_dev, &cfg, 0x55, &recieve_buffer, 4);
+
+	}
 	
 }
