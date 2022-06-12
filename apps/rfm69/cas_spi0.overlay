@@ -1,9 +1,5 @@
 &spi2 {
 	status = "okay";
-	sck-pin = <&spi2_sck_pb10>;
-	mosi-pin = <&spi2_mosi_pc3>;
-	miso-pin = <&spi2_miso_pc2>;
-	ss-pin = <&spi2_nss_pb9>;
-	spi-max-frequency = <4000000>;
+	cs-gpios = <&gpiob 9 GPIO_ACTIVE_LOW>;
 	label = "SPI2";
-};		
+};
