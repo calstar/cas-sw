@@ -7,6 +7,9 @@
 #include <drivers/spi.h>
 #include <drivers/gpio.h>
 
+#ifndef SC18IS600_HEADER
+#define SC18IS600_HEADER
+
 #define WRITE_COMMAND 0x00
 #define READ_COMMAND 0x01
 #define READ_AFTER_WRITE_COMMAND 0x02
@@ -38,3 +41,5 @@ int check_i2c_status(struct device *dev, struct spi_config *cfg);
 int i2c_write_translated(struct device *dev, struct spi_config *cfg, uint8_t *i2c_data_buf, uint8_t i2c_num_bytes, uint8_t i2c_addr);
 
 int i2c_read_translated(struct device *dev, struct spi_config *cfg, uint8_t *i2c_data_buf, uint8_t i2c_num_bytes, uint8_t i2c_addr);
+
+#endif

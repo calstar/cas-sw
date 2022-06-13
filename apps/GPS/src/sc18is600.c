@@ -26,7 +26,7 @@ uint8_t read_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t re
 
 	if (status != 0) printk("Error in sc18is600.c: Failed to read internal register.\n");
 
-	return recieve_buf[0];
+	return recieve_buf[2];
 
 }
 
@@ -48,12 +48,13 @@ int i2c_write_translated(struct device *dev, struct spi_config *cfg, uint8_t *i2
 
 	int status = 0;
 
-	uint8_t send_buf[MAXIMUM_DATA_LENGTH];
+	uint8_t send_buf[MAX_SPI_DATA_LENGTH];
 	send_buf[0] = WRITE_COMMAND;
 	send_buf[1] = i2c_num_bytes;
 	send_buf[2] = i2c_addr;
 	for (int i=0; i<i2c_num_bytes; i++) { send_buf[i+3] = i2c_data_buf[i]; }
 	int send_length = i2c_num_bytes + 3;
+
 	uint8_t recieve_buf = NULL;
 	int recieve_length = 0;
 
@@ -83,14 +84,16 @@ int i2c_read_translated(struct device *dev, struct spi_config *cfg, uint8_t *i2c
 
 	status = cas_spi_transceive(dev, cfg, send_1_buf, send_1_length, recieve_1_buf, recieve_1_length);
 
+	if (status != 0) printk("Error in sc18is600.c: SPI-read to I2C-read translation failed (part 1).\n");
+
 	uint8_t send_2_buf[1] = { READ_BUFFER_COMMAND };
 	int send_2_length = 1;
-	uint8_t recieve_2_buf[MAXIMUM_DATA_LENGTH];
+	uint8_t recieve_2_buf[MAX_SPI_DATA_LENGTH];
 	int recieve_2_length = i2c_num_bytes;
 
 	status = cas_spi_transceive(dev, cfg, send_2_buf, send_2_length, recieve_2_buf, recieve_2_length);
 
-	if (status != 0) printk("Error in sc18is600.c: SPI-read to I2C-read translation failed.\n");
+	if (status != 0) printk("Error in sc18is600.c: SPI-read to I2C-read translation failed (part 2).\n");
 
 	status = check_i2c_status(dev, cfg);
 

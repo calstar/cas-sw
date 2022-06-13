@@ -8,7 +8,7 @@
 /* Arbitrarily chosen for convenience purposes. This value can be increased if
  * desired, but be aware that the specific device you are communicating with
  * might have stricter limits on the amount of data it can recieve. */
-#define MAXIMUM_DATA_LENGTH 64
+#define MAX_SPI_DATA_LENGTH 90
 
 void clear_write_buf_set();
 

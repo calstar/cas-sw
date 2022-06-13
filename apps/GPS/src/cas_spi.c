@@ -3,8 +3,8 @@
 #include <drivers/gpio.h>
 #include "cas_spi.h"
 
-uint8_t write_buf_contents[MAXIMUM_DATA_LENGTH];
-uint8_t read_buf_contents[MAXIMUM_DATA_LENGTH];
+uint8_t write_buf_contents[MAX_SPI_DATA_LENGTH];
+uint8_t read_buf_contents[MAX_SPI_DATA_LENGTH];
 
 struct spi_buf write_buf = {
 	.buf = write_buf_contents,
@@ -25,11 +25,11 @@ struct spi_buf_set read_buf_set = {
 };
 
 void clear_write_buf_set() {
-	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { write_buf_contents[i] = 0x00; }
+	for (int i=0; i<MAX_SPI_DATA_LENGTH; i++) { write_buf_contents[i] = 0x00; }
 	write_buf.len = 0;
 }
 void clear_read_buf_set() {
-	for (int i=0; i<MAXIMUM_DATA_LENGTH; i++) { read_buf_contents[i] = 0x00; }
+	for (int i=0; i<MAX_SPI_DATA_LENGTH; i++) { read_buf_contents[i] = 0x00; }
 	read_buf.len = 0;
 }
 
@@ -37,7 +37,7 @@ int cas_spi_transceive(struct device *dev, struct spi_config *cfg,
 						uint8_t *send_buf, uint8_t send_length,
 						uint8_t *receive_buf, uint8_t receive_length) {
 
-	if (send_length > MAXIMUM_DATA_LENGTH || receive_length > MAXIMUM_DATA_LENGTH) {
+	if (send_length > MAX_SPI_DATA_LENGTH || receive_length > MAX_SPI_DATA_LENGTH) {
 		printk("Error in cas_spi.c: write or read length is too long.\n");
 		return -1;
 	}

@@ -18,20 +18,6 @@ void main(void) {
 
 	// This application uses SPI bus 3, aka cas_onboard_spi
 	const struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(cas_onboard_spi));
-
-	// This application uses pin C8 as the CS pin
-	const struct spi_cs_control ctrl = {
-    	.gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
-    	.gpio_pin = 8,
-    	.gpio_dt_flags = GPIO_ACTIVE_LOW,
-    };
-
-	const struct spi_config cfg = {
-		.frequency = 1000000,
-		.operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8),
-		.cs = &ctrl,
-	};
-
 	if (spi_dev == NULL) {
 		printk("Error in main.c: Failed to get device binding.\n");
 		return NULL;
@@ -41,16 +27,21 @@ void main(void) {
 		return NULL;
 	}
 
-	if (sam_m8q_enable(spi_dev, &cfg) != 0) {
-		printk("Error in main.c: Failed to initialize sam-m8q.\n");
-		return;
-	}
+	// This application uses pin C8 as the CS pin
+	const struct spi_cs_control ctrl = {
+    	.gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
+    	.gpio_pin = 8,
+    	.gpio_dt_flags = GPIO_ACTIVE_LOW,
+    };
+	const struct spi_config cfg = {
+		.frequency = 1000000,
+		.operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8),
+		.cs = &ctrl,
+	};
 
-	while (1) {
-		sam_m8q_enable(spi_dev, &cfg);
-	}
+	Position *pos = sam_m8q_get_position(spi_dev, &cfg);
+	// printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->longitude, pos->Latitude, pos->altitude);
 
-	// TODO: get position data
 	return;
 
 }

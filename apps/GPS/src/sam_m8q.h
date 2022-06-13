@@ -8,7 +8,13 @@
 #include <drivers/spi.h>
 #include <drivers/gpio.h>
 
+#ifndef SAM_M8Q_HEADER
+#define SAM_M8Q_HEADER
+
 #define SAM_M8Q_I2C_ADDR 0x42
+
+#define SYNC_CHAR_1 0xB5
+#define SYNC_CHAR_2 0x62
 
 #define NAV_CLASS 0x01
 #define RXM_CLASS 0x02
@@ -24,9 +30,6 @@
 #define LOG_CLASS 0x21
 #define SEC_CLASS 0x27
 #define HNR_CLASS 0x28
-
-#define SYNC_CHAR_1 0xB5
-#define SYNC_CHAR_2 0x62
 
 #define NAV_POSLLH 0x02
 #define NAV_PVT 0x07
@@ -45,37 +48,35 @@
 #define GNSS_DEAD_RECKONING_COMBINED 4
 #define TIME_ONLY_FIX 5
 
-/* Note: The sc18is600 has a maximum I2C message length of 96 bytes,
- * so the payload of the ubx messages should be a lot smaller than
- * 96 bytes, since the ubx message contains more than just the payload. 
- * 64 was chosen because it is a convenient power of 2. */
-#define MAX_MESSAGE_LENGTH 64
+/* This value was arbitrarily chosen since it is a convenient
+ * round number. Also, the sc18is600 can only send I2C messages
+ * with a maximum of 96 bytes, so the maximum ubx message length
+ * needs to be well under 96. */
+#define MAX_UBX_PAYLOAD_LENGTH 64
 
 typedef struct {
-   uint8_t msgClass;
-   uint8_t msgId;
-   uint16_t length;
-   uint8_t payload[MAX_MESSAGE_LENGTH];
-   uint8_t checksumA;
-   uint8_t checksumB;
+    uint8_t msgClass;
+    uint8_t msgId;
+    uint16_t length;
+    uint8_t payload[MAX_UBX_PAYLOAD_LENGTH];
+    uint8_t checksumA;
+    uint8_t checksumB;
 } UbxMessage;
 
 typedef struct {
 	int32_t longitude;
 	int32_t latitude;
+	int32_t altitude;
 } Position;
 
 void computeChecksum(UbxMessage *msg);
 
-void resetPayload(UbxMessage *msg);
-
 int send_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
 
-int sam_m8q_enable(struct device *dev, struct spi_config *cfg);
+int receive_ubx_msg(struct device *dev, struct spi_config *cfg, uint16_t length, uint8_t *payload_buf);
 
-int receive_ubx_msg(struct device *dev, struct spi_config *cfg, uint8_t length, uint8_t *buf);
+UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload);
 
 Position* sam_m8q_get_position(struct device *dev, struct spi_config *cfg);
 
-
-
+#endif
