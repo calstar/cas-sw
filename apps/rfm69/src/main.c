@@ -4,9 +4,6 @@
 #include "rfm69.h"
 #include "cas_spi.h"
 
-// Usually, this should be either 433 MHz or 915 MHz
- #define FREQUENCY RF69_915MHZ
-
  #define NETWORKID 0
  #define MYNODEID 0
  #define TONODEID 255
@@ -48,6 +45,9 @@ void main(void) {
 		return NULL;
 	}
 
+	configure_radio(spi_dev, &cfg);
+
+	// Put payload data here
 	clear_payload_buffer();
 	payload_buffer[0] = 0x68;
 	payload_buffer[1] = 0x65;

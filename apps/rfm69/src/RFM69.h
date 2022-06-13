@@ -25,6 +25,10 @@ void set_mode(struct device *dev, struct spi_config *cfg, uint8_t mode);
 
 void set_payload_length(struct device *dev, struct spi_config *cfg, uint8_t payload_length);
 
+void set_frequency(struct device *dev, struct spi_config *cfg, uint8_t freq_msb, uint8_t freq_mid, uint8_t freq_lsb);
+
+void configure_radio(struct device *dev, struct spi_config *cfg);
+
 void transmit_packet(struct device *dev, struct spi_config *cfg, 
 					 uint8_t *payload, uint8_t receiver_network, uint8_t receiver_address);
 

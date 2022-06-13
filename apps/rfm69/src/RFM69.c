@@ -44,11 +44,24 @@ void set_payload_length(struct device *dev, struct spi_config *cfg, uint8_t payl
 	write_internal_reg(dev, cfg, REG_PAYLOADLENGTH, payload_length);
 }
 
+void set_frequency(struct device *dev, struct spi_config *cfg, uint8_t freq_msb, uint8_t freq_mid, uint8_t freq_lsb) {
+	write_internal_reg(dev, cfg, REG_FRFMSB, freq_msb);
+	write_internal_reg(dev, cfg, REG_FRFMID, freq_mid);
+	write_internal_reg(dev, cfg, REG_FRFLSB, freq_lsb);
+}
+
+void configure_radio(struct device *dev, struct spi_config *cfg) {
+	// Usually, the frequency should be either 433 MHz or 915 MHz
+	set_frequency(dev, cfg, RF_FRFMSB_915, RF_FRFMID_915, RF_FRFLSB_915);
+	set_payload_length(dev, cfg, PAYLOAD_LENGTH);
+}
+
 void transmit_packet(struct device *dev, struct spi_config *cfg, 
 					 uint8_t *payload, uint8_t receiver_network, uint8_t receiver_address) {
 
-	set_payload_length(dev, cfg, PAYLOAD_LENGTH);
+	set_mode(dev, cfg, RF_OPMODE_STANDBY);
 
+	// Assemble packet into the FIFO register
 	for (int i=0; i<8; i++) { write_internal_reg(dev, cfg, REG_FIFO, PREAMBLE_BYTE); }
 	write_internal_reg(dev, cfg, REG_FIFO, receiver_network);
 	write_internal_reg(dev, cfg, REG_FIFO, receiver_address);
