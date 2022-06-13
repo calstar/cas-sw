@@ -9,7 +9,7 @@ void write_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t reg_
 
 	uint8_t send_buf[2] = { reg_address, value };
 	int send_length = 2;
-	uint8_t recieve_buf[1] = { 0x00 };
+	uint8_t recieve_buf[2] = { 0x00, 0x00 };
 	int recieve_length = 0;
 
 	int status = cas_spi_transceive(dev, cfg, send_buf, send_length, recieve_buf, recieve_length);
@@ -24,15 +24,15 @@ uint8_t read_internal_reg(struct device *dev, struct spi_config *cfg, uint8_t re
 	// Set MSB to 0, indicates a read
 	reg_address &= 0x7F;
 
-	uint8_t send_buf[1] = { reg_address };
-	int send_length = 1;
-	uint8_t recieve_buf[1] = { 0x00 };
-	int recieve_length = 1;
+	uint8_t send_buf[2] = { reg_address, 0x00 };
+	int send_length = 2;
+	uint8_t recieve_buf[2] = { 0x00, 0x00 };
+	int recieve_length = 2;
 
 	int status = cas_spi_transceive(dev, cfg, send_buf, send_length, recieve_buf, recieve_length);
 	if (status != 0) printk("Error in rfm69.c: Failed to read internal register.\n");
 
-	return recieve_buf[0];
+	return recieve_buf[1];
 
 }
 
