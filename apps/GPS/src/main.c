@@ -6,17 +6,48 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
+#include <drivers/spi.h>
+#include <drivers/gpio.h>
+#include "sam_m8q.h"
+#include "sc18is600.h"
+#include "cas_spi.h"
 
 void main(void) {
 
-	struct device *dev = get_spi_dev();
-	if (dev == NULL) {
-		printk("Error in main.c: Failed to get spi device.\n");
-		return;
+	printk("--- SAM-M8Q GPS Module ---\n");
+
+	// This application uses SPI bus 3, aka cas_onboard_spi
+	const struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(cas_onboard_spi));
+
+	// This application uses pin C8 as the CS pin
+	const struct spi_cs_control ctrl = {
+    	.gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
+    	.gpio_pin = 8,
+    	.gpio_dt_flags = GPIO_ACTIVE_LOW,
+    };
+
+	const struct spi_config cfg = {
+		.frequency = 1000000,
+		.operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8),
+		.cs = &ctrl,
+	};
+
+	if (spi_dev == NULL) {
+		printk("Error in main.c: Failed to get device binding.\n");
+		return NULL;
 	}
-	if (sam_m8q_enable(dev) != 0) {
+	if (!device_is_ready(spi_dev)) {
+		printk("Error in main.c: Device is not ready.\n");
+		return NULL;
+	}
+
+	if (sam_m8q_enable(spi_dev, &cfg) != 0) {
 		printk("Error in main.c: Failed to initialize sam-m8q.\n");
 		return;
+	}
+
+	while (1) {
+		sam_m8q_enable(spi_dev, &cfg);
 	}
 
 	// TODO: get position data

@@ -5,6 +5,8 @@
  */
 
 #include <device.h>
+#include <drivers/spi.h>
+#include <drivers/gpio.h>
 
 #define SAM_M8Q_I2C_ADDR 0x42
 
@@ -62,3 +64,18 @@ typedef struct {
 	int32_t longitude;
 	int32_t latitude;
 } Position;
+
+void computeChecksum(UbxMessage *msg);
+
+void resetPayload(UbxMessage *msg);
+
+int send_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
+
+int sam_m8q_enable(struct device *dev, struct spi_config *cfg);
+
+int receive_ubx_msg(struct device *dev, struct spi_config *cfg, uint8_t length, uint8_t *buf);
+
+Position* sam_m8q_get_position(struct device *dev, struct spi_config *cfg);
+
+
+

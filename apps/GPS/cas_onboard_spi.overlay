@@ -1,0 +1,5 @@
+&spi3 {
+	status = "okay";
+	cs-gpios = <&gpioc 8 GPIO_ACTIVE_LOW>;
+	label = "SPI3";
+};
