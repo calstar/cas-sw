@@ -64,16 +64,20 @@ typedef struct {
 } UbxMessage;
 
 typedef struct {
-	int32_t longitude;
-	int32_t latitude;
-	int32_t altitude;
+	int32_t iTOW;
+	int32_t lon;
+	int32_t lat;
+	int32_t height;
+	int32_t hMSL;
+	int32_t hAcc;
+	int32_t vAcc;
 } Position;
 
 void computeChecksum(UbxMessage *msg);
 
 int send_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
 
-int receive_ubx_msg(struct device *dev, struct spi_config *cfg, uint16_t length, uint8_t *payload_buf);
+int receive_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload);
 

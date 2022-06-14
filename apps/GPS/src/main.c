@@ -40,7 +40,7 @@ void main(void) {
 	};
 
 	Position *pos = sam_m8q_get_position(spi_dev, &cfg);
-	// printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->longitude, pos->Latitude, pos->altitude);
+	printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->lon, pos->lat, pos->hMSL);
 
 	return;
 
