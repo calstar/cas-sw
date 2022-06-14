@@ -47,10 +47,8 @@
 #define GNSS_DEAD_RECKONING_COMBINED 4
 #define TIME_ONLY_FIX 5
 
-/* This value was arbitrarily chosen since it is a convenient
- * round number. Also, the sc18is600 can only send I2C messages
- * with a maximum of 96 bytes, so the maximum ubx message length
- * needs to be well under 96. */
+/* Arbitrarily chosen value since it is a
+ * convenient round number. */
 #define MAX_UBX_PAYLOAD_LENGTH 64
 
 typedef struct {
@@ -80,6 +78,6 @@ int receive_ubx_msg(struct device *dev, UbxMessage *msg);
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload);
 
-int sam_m8q_get_position(struct device *dev, uint8_t *position_buf);
+int sam_m8q_get_position(struct device *dev);
 
 #endif

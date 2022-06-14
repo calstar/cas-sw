@@ -4,7 +4,7 @@
  * Protocol Specification: https://content.u-blox.com/sites/default/files/products/documents/u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221.pdf
  *
  * Note: for more information about how this code works, please
- * see pages 168-179 of the protocol specification.
+ * see pages 168-179 and page 374 of the protocol specification.
  */
 
 #include <device.h>
@@ -75,7 +75,7 @@ UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *
 	return &msg;
 }
 
-int sam_m8q_get_position(struct device *dev, uint8_t *position_buf) {
+int sam_m8q_get_position(struct device *dev) {
 	int status = 0;
 	uint8_t payload_buf[28] = { 0, 0, 0, 0, 0, 0, 0, 
 								0, 0, 0, 0, 0, 0, 0, 
@@ -86,7 +86,11 @@ int sam_m8q_get_position(struct device *dev, uint8_t *position_buf) {
 	if (status != 0) { printk("Error in sam-m8q.c: Failed to receive ubx position reply.\n"); }
 	for (int i=0; i<28; i++) { payload_buf[i] = msg->payload[i]; }
 
-	for (int i=0; i<28; i++) { position_buf[i] = payload_buf[i]; }
+	uint32_t longitude = (uint32_t) payload_buf[4];
+	uint32_t latitude = (uint32_t) payload_buf[8];
+	uint32_t altitude = (uint32_t) payload_buf[12];
+
+	printk("Longitude: %d, Latitude: %d, Altitude: %d\n", longitude, latitude, altitude);
 
 	return status;
 
