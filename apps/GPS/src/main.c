@@ -6,44 +6,33 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
-#include <drivers/spi.h>
-#include <drivers/gpio.h>
+#include <drivers/i2c.h>
 #include "sam_m8q.h"
-#include "sc18is600.h"
-#include "cas_spi.h"
+
+#define DEVICE_NODE cas_i2c0
 
 void main(void) {
 
 	printk("--- SAM-M8Q GPS Module ---\n");
 
-	// This application uses SPI bus 3, aka cas_onboard_spi
-	const struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(cas_onboard_spi));
-	if (spi_dev == NULL) {
+	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
+	if (dev == NULL) {
 		printk("Error in main.c: Failed to get device binding.\n");
 		return NULL;
 	}
-	if (!device_is_ready(spi_dev)) {
+	if (!device_is_ready(dev)) {
 		printk("Error in main.c: Device is not ready.\n");
 		return NULL;
 	}
 
-	// This application uses pin C8 as the CS pin
-	const struct spi_cs_control ctrl = {
-    	.gpio_dev = DEVICE_DT_GET(DT_NODELABEL(gpioc)),
-    	.gpio_pin = 8,
-    	.gpio_dt_flags = GPIO_ACTIVE_LOW,
-    };
-	const struct spi_config cfg = {
-		.frequency = 1000000,
-		.operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8),
-		.cs = &ctrl,
-	};
-
-	Position *pos;
+	uint8_t position_buf[28] = { 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 0, 0, 0, 0, };
 	while (1) {
 		k_msleep(1000);
-		pos = sam_m8q_get_position(spi_dev, &cfg);
-		printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->lon, pos->lat, pos->hMSL);
+		sam_m8q_get_position(dev, &position_buf);
+		printk("Altitude: %X, %X, %X, %X\n", position_buf[16], position_buf[17], position_buf[18], position_buf[19]);
 	}
 
 	return;

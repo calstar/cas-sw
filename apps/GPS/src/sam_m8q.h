@@ -5,8 +5,7 @@
  */
 
 #include <device.h>
-#include <drivers/spi.h>
-#include <drivers/gpio.h>
+#include <drivers/i2c.h>
 
 #ifndef SAM_M8Q_HEADER
 #define SAM_M8Q_HEADER
@@ -75,12 +74,12 @@ typedef struct {
 
 void computeChecksum(UbxMessage *msg);
 
-int send_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
+int send_ubx_msg(struct device *dev, UbxMessage *msg);
 
-int receive_ubx_msg(struct device *dev, struct spi_config *cfg, UbxMessage *msg);
+int receive_ubx_msg(struct device *dev, UbxMessage *msg);
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload);
 
-Position* sam_m8q_get_position(struct device *dev, struct spi_config *cfg);
+int sam_m8q_get_position(struct device *dev, uint8_t *position_buf);
 
 #endif
