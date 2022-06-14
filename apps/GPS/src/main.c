@@ -39,8 +39,12 @@ void main(void) {
 		.cs = &ctrl,
 	};
 
-	Position *pos = sam_m8q_get_position(spi_dev, &cfg);
-	printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->lon, pos->lat, pos->hMSL);
+	Position *pos;
+	while (1) {
+		k_msleep(1000);
+		pos = sam_m8q_get_position(spi_dev, &cfg);
+		printk("Longitude: %d, Latitude: %d, Altitude: %d\n", pos->lon, pos->lat, pos->hMSL);
+	}
 
 	return;
 
