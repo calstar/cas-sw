@@ -72,12 +72,12 @@ typedef struct {
 
 void computeChecksum(UbxMessage *msg);
 
-int send_ubx_msg(struct device *dev, UbxMessage *msg);
+void send_ubx_msg(struct device *dev, UbxMessage *msg);
 
-int receive_ubx_msg(struct device *dev, UbxMessage *msg);
+UbxMessage* receive_ubx_msg(struct device *dev);
 
-UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload);
+UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload_buf);
 
-int sam_m8q_get_position(struct device *dev);
+void sam_m8q_get_position(struct device *dev);
 
 #endif

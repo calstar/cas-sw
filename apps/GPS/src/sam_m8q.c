@@ -28,36 +28,33 @@ void computeChecksum(UbxMessage *msg){
   }
 }
 
-int send_ubx_msg(struct device *dev, UbxMessage *msg) {
-	int status = 0;
+void send_ubx_msg(struct device *dev, UbxMessage *msg) {
 	char sync_char_1 = SYNC_CHAR_1;
 	char sync_char_2 = SYNC_CHAR_2;
-	status = i2c_write(dev, &sync_char_1,      1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &sync_char_2,      1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->msgClass),  1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->msgId),     1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->length),    2,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, msg->payload,      msg->length, SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->checksumA), 1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->checksumB), 1,           SAM_M8Q_I2C_ADDR);
-	if (status != 0) { printk("Error in sam-m8q.c: Failed to send a UBX message over the I2C channel.\n"); }
-	return status;
+	i2c_write(dev, &sync_char_1,      1,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &sync_char_2,      1,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &(msg->msgClass),  1,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &(msg->msgId),     1,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &(msg->length),    2,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, msg->payload,      msg->length, SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &(msg->checksumA), 1,           SAM_M8Q_I2C_ADDR);
+	i2c_write(dev, &(msg->checksumB), 1,           SAM_M8Q_I2C_ADDR);
+	return;
 }
 
-int receive_ubx_msg(struct device *dev, UbxMessage *msg) {
-	int status = 0;
-	char sync_char_1 = SYNC_CHAR_1;
-	char sync_char_2 = SYNC_CHAR_2;
-	status = i2c_write(dev, &sync_char_1,      1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &sync_char_2,      1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->msgClass),  1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->msgId),     1,           SAM_M8Q_I2C_ADDR);
-	status = i2c_write(dev, &(msg->length),    2,           SAM_M8Q_I2C_ADDR);
-	status =  i2c_read(dev, msg->payload,      msg->length, SAM_M8Q_I2C_ADDR);
-	status =  i2c_read(dev, &(msg->checksumA), 1,           SAM_M8Q_I2C_ADDR);
-	status =  i2c_read(dev, &(msg->checksumB), 1,           SAM_M8Q_I2C_ADDR);
-	if (status != 0) { printk("Error in sam-m8q.c: Failed to receive a UBX message over the I2C channel.\n"); }
-	return status;
+UbxMessage* receive_ubx_msg(struct device *dev) {
+	char sync_char_1 = 0;
+	char sync_char_2 = 0;
+	UbxMessage *msg = create_ubx_msg(0, 0, 0, NULL);
+	i2c_read(dev, &sync_char_1,      1,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &sync_char_2,      1,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &(msg->msgClass),  1,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &(msg->msgId),     1,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &(msg->length),    2,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, msg->payload,      msg->length, SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &(msg->checksumA), 1,           SAM_M8Q_I2C_ADDR);
+	i2c_read(dev, &(msg->checksumB), 1,           SAM_M8Q_I2C_ADDR);
+	return msg;
 }
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload_buf) {
@@ -75,23 +72,14 @@ UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *
 	return &msg;
 }
 
-int sam_m8q_get_position(struct device *dev) {
-	int status = 0;
-	uint8_t payload_buf[28] = { 0, 0, 0, 0, 0, 0, 0, 
-								0, 0, 0, 0, 0, 0, 0, 
-								0, 0, 0, 0, 0, 0, 0, 
-								0, 0, 0, 0, 0, 0, 0, };
-	UbxMessage *msg = create_ubx_msg(NAV_CLASS, NAV_POSLLH, 28, payload_buf);
-	status = receive_ubx_msg(dev, msg);
-	if (status != 0) { printk("Error in sam-m8q.c: Failed to receive ubx position reply.\n"); }
-	for (int i=0; i<28; i++) { payload_buf[i] = msg->payload[i]; }
-
-	uint32_t longitude = (uint32_t) payload_buf[4];
-	uint32_t latitude = (uint32_t) payload_buf[8];
-	uint32_t altitude = (uint32_t) payload_buf[12];
-
+void sam_m8q_get_position(struct device *dev) {
+	UbxMessage *msg_request = create_ubx_msg(NAV_CLASS, NAV_POSLLH, 0, NULL);
+	send_ubx_msg(dev, msg_request);
+	UbxMessage *msg_response = receive_ubx_msg(dev);
+	uint32_t longitude = (uint32_t) (msg_response->payload)[4];
+	uint32_t latitude = (uint32_t) (msg_response->payload)[8];
+	uint32_t altitude = (uint32_t) (msg_response->payload)[12];
 	printk("Longitude: %d, Latitude: %d, Altitude: %d\n", longitude, latitude, altitude);
-
-	return status;
+	return;
 
 }
