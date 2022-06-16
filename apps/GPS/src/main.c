@@ -25,10 +25,16 @@ void main(void) {
 		printk("Error in main.c: Device is not ready.\n");
 		return;
 	}
-	while (1) {
-		k_msleep(1000);
-		sam_m8q_get_position(dev);
-	}
+	
+	sam_m8q_test(dev);
+
+	/*
+
+	sam_m8q_initialize(dev);
+
+	sam_m8q_get_position(dev);
+
+	*/
 
 	return;
 

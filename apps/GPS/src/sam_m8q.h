@@ -49,7 +49,7 @@
 
 /* Arbitrarily chosen value since it is a
  * convenient round number. */
-#define MAX_UBX_PAYLOAD_LENGTH 64
+#define MAX_UBX_PAYLOAD_LENGTH 100
 
 typedef struct {
     uint8_t msgClass;
@@ -77,6 +77,8 @@ void send_ubx_msg(struct device *dev, UbxMessage *msg);
 UbxMessage* receive_ubx_msg(struct device *dev);
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload_buf);
+
+void sam_m8q_initialize(struct device *dev);
 
 void sam_m8q_get_position(struct device *dev);
 

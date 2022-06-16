@@ -1,0 +1,8 @@
+&i2c1 {
+	status = "okay";
+	bno055_i2c_node: bno055@28 {
+		compatible = "bosch,bno055";
+		reg = <0x28>;
+		label = "BNO055_I2C";
+	};
+};		
