@@ -31,14 +31,17 @@ void main(void) {
 	PVTData *pvt;
 
 	while(1) {
+
+		k_msleep(1000);
 	
 		pvt = sam_m8q_get_pvt_data(i2c_dev);
 
 		printk("Year: %d, Month: %d, Day: %d\n", pvt->year, pvt->month, pvt->day);
+		printk("Hour: %d, Minute: %d, Second: %d\n", pvt->hour, pvt->min, pvt->sec);
 		printk("Latitude: %d degrees, Longitude: %d degrees\n", (pvt->latitude)/10000000, (pvt->longitude)/10000000);
-		printk("Height: %d meters\n", (pvt->height)/1000);
-
-		k_msleep(1000);
+		printk("Height: %d meters, Height above sea level: %d meters\n", (pvt->height)/1000, (pvt->hMSL)/1000);
+		printk("Time/Date valid?: %d", (pvt->validTimeFlag & 0x03 != 0));
+		printk("\n\n");
 
 	}
 
