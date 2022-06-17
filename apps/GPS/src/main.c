@@ -1,7 +1,9 @@
 /* Application to communicate with the SAM-M8Q GNSS module over 
  * I2C and get latitude, longitude, and altitude readings.
  * 
- * The cas-stack needs to have the I2C1 and I2C2 buses shorted together.
+ * The cas-stack needs to have the I2C1 and I2C2 buses shorted together
+ * for this application to work, because the sam_m8q is actually
+ * attached to the I2C2 bus.
  */
 
 #include <zephyr.h>
@@ -16,25 +18,29 @@ void main(void) {
 
 	printk("--- SAM-M8Q GPS Module ---\n");
 
-	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
-	if (dev == NULL) {
+	const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
+	if (i2c_dev == NULL) {
 		printk("Error in main.c: Failed to get device binding.\n");
 		return;
 	}
-	if (!device_is_ready(dev)) {
+	if (!device_is_ready(i2c_dev)) {
 		printk("Error in main.c: Device is not ready.\n");
 		return;
 	}
+
+	PVTData *pvt;
+
+	while(1) {
 	
-	sam_m8q_test(dev);
+		pvt = sam_m8q_get_pvt_data(i2c_dev);
 
-	/*
+		printk("Year: %d, Month: %d, Day: %d\n", pvt->year, pvt->month, pvt->day);
+		printk("Latitude: %d degrees, Longitude: %d degrees\n", (pvt->latitude)/10000000, (pvt->longitude)/10000000);
+		printk("Height: %d meters\n", (pvt->height)/1000);
 
-	sam_m8q_initialize(dev);
+		k_msleep(1000);
 
-	sam_m8q_get_position(dev);
-
-	*/
+	}
 
 	return;
 

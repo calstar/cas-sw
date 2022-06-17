@@ -50,7 +50,14 @@
 /* Arbitrarily chosen value since it is a
  * convenient round number. */
 #define MAX_UBX_PAYLOAD_LENGTH 100
+/* The length of the entire message is equal to
+ * the payload length plus 1 byte for the class, 1
+ * byte for the id, 2 bytes for the length, 2 bytes
+ * for the CRC, and 2 bytes for the sync chars. */
+#define MAX_UBX_MESSAGE_LENGTH (MAX_UBX_PAYLOAD_LENGTH + 8)
 
+/* Copied from this implementation:
+ * https://github.com/melopero/Melopero_UBX/blob/master/src/Melopero_UBX.h */
 typedef struct {
     uint8_t msgClass;
     uint8_t msgId;
@@ -60,15 +67,42 @@ typedef struct {
     uint8_t checksumB;
 } UbxMessage;
 
+/* Copied from this implementation:
+ * https://github.com/melopero/Melopero_UBX/blob/master/src/Melopero_UBX.h */
 typedef struct {
-	int32_t iTOW;
-	int32_t lon;
-	int32_t lat;
-	int32_t height;
-	int32_t hMSL;
-	int32_t hAcc;
-	int32_t vAcc;
-} Position;
+ uint32_t itow;
+ uint16_t year;
+ uint8_t month;
+ uint8_t day;
+ uint8_t hour;
+ uint8_t min;
+ uint8_t sec;
+ uint8_t validTimeFlag; // 7 | 6 | 5 | 4 | 3:validMag | 2:fullyResolved | 1:validTime | 0:validDate
+ uint32_t timeAccuracy; //nanoseconds
+ int32_t nano; //nanoseconds
+ uint8_t fixType;
+ uint8_t fixStatusFlags;
+ uint8_t additionalFlags;
+ uint8_t numberOfSatellites;
+ int32_t longitude; //degrees
+ int32_t latitude; //degrees
+ int32_t height; //mm
+ int32_t hMSL; //mm
+ uint32_t horizontalAccuracy;
+ uint32_t verticalAccuracy;
+ int32_t velocityNorth; //mm/s
+ int32_t velocityEast; //mm/s
+ int32_t velocityDown; //mm/s
+ int32_t groundSpeed; //mm/s
+ int32_t headingOfMotion; //degrees
+ uint32_t speedAccuracy; //mm/s
+ int32_t headingAccuracy; //mm/s
+ uint16_t positionDOP;
+ uint8_t reserved;
+ int32_t headingOfVehicle;
+ int16_t magneticDeclination;
+ uint16_t declinationAccuracy;
+} PVTData;
 
 void computeChecksum(UbxMessage *msg);
 
@@ -78,8 +112,6 @@ UbxMessage* receive_ubx_msg(struct device *dev);
 
 UbxMessage* create_ubx_msg(uint8_t class, uint8_t id, uint16_t length, uint8_t *payload_buf);
 
-void sam_m8q_initialize(struct device *dev);
-
-void sam_m8q_get_position(struct device *dev);
+PVTData* sam_m8q_get_pvt_data(struct device *dev);
 
 #endif
