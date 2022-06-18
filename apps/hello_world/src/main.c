@@ -7,7 +7,10 @@
 #include <zephyr.h>
 #include <sys/printk.h>
 
-void main(void)
-{
-	printk("Hello World! %s\n", CONFIG_BOARD);
+void main(void) {
+
+	while (1) {
+		printk("Hello World! %s\n", CONFIG_BOARD);
+	}
+	
 }
