@@ -35,20 +35,17 @@
 			gpios = <&gpiod 2 GPIO_ACTIVE_HIGH>;
 		};
 	};
-
-	aliases {
-		led0 = &green_led_2;
-		sw0 = &user_button;
-
-		cas-spi0 = &spi2;
-		cas-spihs = &spi1;
-
-		cas-i2c0 = &i2c1;
-
-		cas-onboard-spi = &spi3;
-		cas-onboard-i2c = &i2c3;
-	};
 };
+
+led0: &green_led_2 {};
+sw0: &user_button {};
+
+cas_i2c0: &i2c1 {};
+cas_onboard_i2c: &i2c3 {}; 
+
+cas_spihs: &spi1 {};
+cas_spi0: &spi2 {};
+cas_onboard_spi: &spi3 {};
 
 &clk_hsi {
 	status = "okay";
@@ -111,13 +108,13 @@
 };
 
 &spi2 {
-	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pc11 &spi3_mosi_pc12>;
+	pinctrl-0 = <&spi2_nss_pb9 &spi2_sck_pb10 &spi2_miso_pc2 &spi2_mosi_pc3>;
 	pinctrl-names = "default";
 	status = "okay";
 };
 
 &spi3 {
-	pinctrl-0 = <&spi2_nss_pb9 &spi2_sck_pb10 &spi2_miso_pc2 &spi2_mosi_pc3>;
+	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pc11 &spi3_mosi_pc12>;
 	pinctrl-names = "default";
 	status = "okay";
 };

@@ -1,6 +1,2 @@
-# Example
-
-# add_subdirectory_ifdef(CONFIG_SERIAL_HAS_DRIVER serial)
-# add_subdirectory_ifdef(CONFIG_SYS_CLOCK_EXISTS timer)
-
-add_subdirectory_ifdef(BNO055_driver)
+# Example:
+# add_subdirectory_ifdef(CONFIG_MY_DRIVER my_driver)

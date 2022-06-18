@@ -6,6 +6,4 @@ menu "CAS"
 # Add more drivers here like https://github.com/olofk/serv/tree/main/zephyr/drivers
 # rsource "drivername/Kconfig"
 
-rsource "BNO055_driver/Kconfig"
-
 endmenu
