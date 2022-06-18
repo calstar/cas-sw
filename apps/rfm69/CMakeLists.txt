@@ -5,16 +5,6 @@ cmake_minimum_required(VERSION 3.20.0)
 list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 list(APPEND SOC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
 list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr)
-<<<<<<< HEAD:apps/bno055/CMakeLists.txt
-list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/BNO055_driver)
-
-# list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/blah)
-
-find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(bno055)
-
-target_sources(app PRIVATE src/main.c)
-=======
 
 # To add out-of-tree device drivers to the project, uncomment the following line.
 # list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr/drivers/my_driver)
@@ -22,8 +12,7 @@ target_sources(app PRIVATE src/main.c)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 # Update the following line to contain the name of the current application.
-project(GPS)
+project(rfm69)
 
 # If you have multiple source files, list all of them here.
-target_sources(app PRIVATE src/main.c src/sam_m8q.c src/sc18is600.c src/sam_m8q.h src/sc18is600.h)
->>>>>>> rfm69:apps/GPS/CMakeLists.txt
+target_sources(app PRIVATE src/main.c src/rfm69.c src/cas_spi.c src/rfm69.h src/cas_spi.h src/RFM69registers.h)
