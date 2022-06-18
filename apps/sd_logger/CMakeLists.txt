@@ -12,7 +12,7 @@ list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../cas-zephyr-drivers/zephyr
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 # Update the following line to contain the name of the current application.
-project(hello_world)
+project(sd_logger)
 
 # If you have multiple source files, list all of them here.
 target_sources(app PRIVATE src/main.c)

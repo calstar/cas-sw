@@ -15,8 +15,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(rfm69)
 
 # If you have multiple source files, list all of them here.
-<<<<<<< HEAD:apps/rfm69/CMakeLists.txt
 target_sources(app PRIVATE src/main.c src/rfm69.c src/cas_spi.c src/rfm69.h src/cas_spi.h src/RFM69registers.h)
-=======
-target_sources(app PRIVATE src/main.c src/sam_m8q.c src/sam_m8q.h)
->>>>>>> cooper-gps-bodge:apps/GPS/CMakeLists.txt

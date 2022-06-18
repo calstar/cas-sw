@@ -50,11 +50,10 @@ void main(void) {
 	while (1) {
 		// Put payload data here
 		clear_payload_buffer();
-		payload_buffer[0] = 0x68;
-		payload_buffer[1] = 0x65;
-		payload_buffer[2] = 0x6C;
-		payload_buffer[3] = 0x6C;
-		payload_buffer[4] = 0x6F;
+		payload_buffer[0] = 0xAA;
+		payload_buffer[1] = 0xBB;
+		payload_buffer[2] = 0xCC;
+		payload_buffer[3] = 0xDD;
 		transmit_packet(spi_dev, &cfg, &payload_buffer, NETWORKID, TONODEID);
 	}
 
