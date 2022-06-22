@@ -56,7 +56,9 @@ void main(void) {
 		payload_buffer[1] = 0xBB;
 		payload_buffer[2] = 0xCC;
 		payload_buffer[3] = 0xDD;
+		payload_buffer[4] = 0xEE;
 		transmit_packet(spi_dev, &cfg, &payload_buffer, NETWORKID, TONODEID);
+		printk("sent packet\n");
 	}
 
 }

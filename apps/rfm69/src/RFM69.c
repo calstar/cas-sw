@@ -71,15 +71,12 @@ void transmit_packet(struct device *dev, struct spi_config *cfg,
 
 	// Wait for confirmation that the packet was sent
 	int timeout = 100000;
-	uint8_t packet_send_status = 0x00;
-	while (1) {
+	uint8_t irq_flags = 0x00;
+	while ((irq_flags & RF_IRQFLAGS2_PACKETSENT) == 0x00) {
+		irq_flags = read_internal_reg(dev, cfg, REG_IRQFLAGS2);
 		timeout--;
 		if (timeout < 0) {
-			printk("Error in rfm69.c: timeout occured waiting to send packet.\n");
-			break;
-		}
-		packet_send_status = read_internal_reg(dev, cfg, REG_IRQFLAGS2);
-		if (packet_send_status & RF_IRQFLAGS2_PACKETSENT == 0x00) {
+			printk("Error in rfm69.c: timeout occured when sending packet.\n");
 			break;
 		}
 	}
