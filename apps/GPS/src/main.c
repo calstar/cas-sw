@@ -33,9 +33,12 @@ void main(void) {
 	while(1) {
 
 		k_msleep(1000);
+
+		print_nmea_messages(i2c_dev);
 	
 		pvt = sam_m8q_get_pvt_data(i2c_dev);
 
+		printk("\n\n");
 		printk("Year: %d, Month: %d, Day: %d\n", pvt->year, pvt->month, pvt->day);
 		printk("Hour: %d, Minute: %d, Second: %d\n", pvt->hour, pvt->min, pvt->sec);
 		printk("Latitude: %d degrees, Longitude: %d degrees\n", (pvt->latitude)/10000000, (pvt->longitude)/10000000);

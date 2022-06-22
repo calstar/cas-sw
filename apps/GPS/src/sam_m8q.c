@@ -110,5 +110,28 @@ PVTData* sam_m8q_get_pvt_data(struct device *dev) {
 	return (PVTData*) msg_response->payload;
 }
 
+/* See page 138 of the protocol specification for information about
+ * the structure of NMEA messages. In particular, the first character
+ * is always $, and the last two characters are always 0D 0A. */
+void print_nmea_messages(struct device *dev) {
 
+	char current_byte;
+
+	while (1) {
+
+		i2c_read(dev, &current_byte, 1, SAM_M8Q_I2C_ADDR);
+		if (current_byte != '$') {
+			return;
+		} else {
+			printk("%c", current_byte);
+		}
+
+		while (current_byte != 0x0A) {
+			i2c_read(dev, &current_byte, 1, SAM_M8Q_I2C_ADDR);
+			printk("%c", current_byte);
+		}
+
+	}
+
+}
 
