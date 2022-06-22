@@ -4,9 +4,11 @@
 #include "rfm69.h"
 #include "cas_spi.h"
 
- #define NETWORKID 0
- #define MYNODEID 0
- #define TONODEID 255
+#define NETWORKID 0
+#define MYNODEID 0
+#define TONODEID 255
+
+#define DEVICE_NODE cas_spi0
 
 uint8_t payload_buffer[PAYLOAD_LENGTH];
 
@@ -21,7 +23,7 @@ void main(void) {
 	printk("--- RFM69 Radio Transciever ---\n");
 
 	// This application uses SPI bus 2, aka cas_spi0
-	const struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(cas_spi0));
+	const struct device *spi_dev = DEVICE_DT_GET(DT_NODELABEL(DEVICE_NODE));
 
 	// This application uses pin B9 as the CS pin
 	const struct spi_cs_control ctrl = {

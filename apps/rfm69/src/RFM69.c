@@ -70,7 +70,19 @@ void transmit_packet(struct device *dev, struct spi_config *cfg,
 	set_mode(dev, cfg, RF_OPMODE_TRANSMITTER);
 
 	// Wait for confirmation that the packet was sent
-	while ((read_internal_reg(dev, cfg, REG_IRQFLAGS2) & RF_IRQFLAGS2_PACKETSENT) == 0x00);
+	int timeout = 100000;
+	uint8_t packet_send_status = 0x00;
+	while (1) {
+		timeout--;
+		if (timeout < 0) {
+			printk("Error in rfm69.c: timeout occured waiting to send packet.\n");
+			break;
+		}
+		packet_send_status = read_internal_reg(dev, cfg, REG_IRQFLAGS2);
+		if (packet_send_status & RF_IRQFLAGS2_PACKETSENT == 0x00) {
+			break;
+		}
+	}
 
 	set_mode(dev, cfg, RF_OPMODE_STANDBY);
 
