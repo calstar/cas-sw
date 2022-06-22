@@ -9,4 +9,4 @@ Many parts of the rfm69-specific code are derived from this library: https://git
 
 In its current state, the application runs without errors and reports that the data was transmitted sucesfully, however it has not yet been tested with a reciever radio that would verify if data is actually being sent.
 
-** Note: the JP1 jumper that connects the radio's output to the antenna has not yet been soldered on to the board. We need to add the JP1 jumper so that the radio will actually be able to transmit. **
+**Note: the JP1 jumper that connects the radio's output to the antenna has not yet been soldered on to the board. We need to add the JP1 jumper so that the radio will actually be able to transmit.**
