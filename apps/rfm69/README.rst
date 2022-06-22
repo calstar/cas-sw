@@ -1,33 +1,10 @@
-.. _hello_world:
-
-Hello World
+RFM69 Radio module
 ###########
 
-Overview
-********
+This application sends arbitrary data from the RFM69 transciever on the radio board. The STM32 core communicates with the RFM69 over the SPI2 bus. Communication with the RFM69 happens exclusively by writing/reading the internal registers over SPI. Transmitting data is done by writing the data to be sent into the internal register address 0x00, which is a FIFO that holds the data to be sent. 
 
-A simple sample that can be used with any :ref:`supported board <boards>` and
-prints "Hello World" to the console.
+cas_spi.c and cas_spi.h manage the boilerplate code for sending and recieving data over spi in zephyr. These 2 files can be reused for other applications that also communicate over SPI.
 
-Building and Running
-********************
+Many parts of the rfm69-specific code are derived from this library: https://github.com/LowPowerLab/RFM69
 
-This application can be built and executed on QEMU as follows:
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/hello_world
-   :host-os: unix
-   :board: qemu_x86
-   :goals: run
-   :compact:
-
-To build for another board, change "qemu_x86" above to that board's name.
-
-Sample Output
-=============
-
-.. code-block:: console
-
-    Hello World! x86
-
-Exit QEMU by pressing :kbd:`CTRL+A` :kbd:`x`.
+In its current state, the application runs without errors and reports that the data was transmitted sucesfully, however it has not yet been tested with a reciever radio that would verify if data is actually being sent.
