@@ -1,6 +1,0 @@
-{
-    "CAS_CORE": {
-        "inherits": [ "MCU_STM32F401xE" ],
-        "device_name": "STM32F401RETx"
-    }
-}
