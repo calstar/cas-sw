@@ -1,5 +1,0 @@
-&spi2 {
-	status = "okay";
-	cs-gpios = <&gpiob 9 GPIO_ACTIVE_LOW>;
-	label = "SPI2";
-};

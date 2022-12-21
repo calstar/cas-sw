@@ -1,6 +1,6 @@
-[submodule "cas-zephyr-drivers"]
-	path = cas-zephyr-drivers
-	url = https://github.com/calstar/cas-zephyr-drivers
 [submodule "Mbed/Blinky/mbed-os"]
 	path = Mbed/Blinky/mbed-os
 	url = https://github.com/ARMmbed/mbed-os
+[submodule "Zephyr/cas-zephyr-drivers"]
+	path = Zephyr/cas-zephyr-drivers
+	url = https://github.com/calstar/cas-zephyr-drivers
